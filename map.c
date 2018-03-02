@@ -55,6 +55,9 @@ map_load(char *filename)
 		printf("(%d, %d), %d pages\n", e->x, e->y, e->npage);
 	}
 
+	if(r->buf[0] != '\x66')
+		printf("unexpected event list terminator: \\x%x\n", r->buf[0]);
+
 	fclose(f);
 	return m;
 }
