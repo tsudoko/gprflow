@@ -7,4 +7,4 @@ void           readn(Reader *r, int n);
 unsigned char  readbyte(Reader *r);
 int            readint(Reader *r);
 unsigned char *readstr(Reader *r);
-int            readncmp(Reader *r, char *s2, int len);
+int            readncmp(Reader *r, const unsigned char *s2, int len);

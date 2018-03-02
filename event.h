@@ -1,4 +1,4 @@
-/* this header file depends on stdio.h and page.h */
+/* this header file depends on reader.h and page.h */
 
 typedef enum {
 	EV_BLANK,
@@ -14,5 +14,5 @@ typedef struct _event {
 	struct _event *next;
 } Event;
 
-Event *event_load(FILE *f);
+Event *event_load(Reader *r);
 void event_free(Event *e);

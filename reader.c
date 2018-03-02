@@ -32,21 +32,24 @@ unsigned char *
 readstr(Reader *r)
 {
 	int len = readint(r);
+	assert(len > 0);
 	unsigned char *str = malloc(len), *b = str;
 	int n = len/nelem(r->buf);
 	for(int i = 0; i < n; i++) {
 		readn(r, nelem(r->buf));
 		memcpy(b, r->buf, nelem(r->buf));
-		b += n;
+		b += nelem(r->buf);
 	}
+	readn(r, len%nelem(r->buf));
 	memcpy(b, r->buf, len%nelem(r->buf));
+	assert(str[len-1] == '\0');
 	return str;
 }
 
 /* guaranteed to leave the first differing part of the string in r->buf */
 /* TODO: more diagnostic info? */
 int
-readncmp(Reader *r, char *s2, int len)
+readncmp(Reader *r, const unsigned char *s2, int len)
 {
 	unsigned char *str = malloc(len), *b = str;
 	int n = len/nelem(r->buf), ret;

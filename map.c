@@ -47,7 +47,7 @@ map_load(char *filename)
 		m->tiles[i] = readint(r);
 
 	while(readbyte(r) == '\x6f') {
-		Event *e = event_load(f);
+		Event *e = event_load(r);
 		printf("event \"");
 		for(int i = 0; i < strlen(e->name); i++)
 			printf("\\x%hhx", e->name[i]);
