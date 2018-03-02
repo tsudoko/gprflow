@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "reader.h"
 #include "page.h"
 #include "event.h"
 #include "map.h"
@@ -23,49 +24,35 @@ static const unsigned char MAGICLEN = 34; /* XXX */
 Map *
 map_load(char *filename)
 {
+	Reader reader, *r = &reader;
 	FILE *f = fopen(filename, "rb");
 	Map *m = malloc(sizeof *m);
 	unsigned char buf[BUFLEN];
 
-	fread(buf, 1, MAGICLEN, f);
-	assert(BUFLEN >= MAGICLEN); /* could make this compile-time */
-	if(memcmp(buf, MAGIC, MAGICLEN) != 0)
+	reader.f = f;
+
+	if(readncmp(r, MAGIC, MAGICLEN) != 0) {
+		printf("%x %x %x %x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
 		return NULL;
-	/*
-	for(int i = 0; i < MAGICLEN; i++)
-		printf("\\x%x", buf[i]);
-	printf("\n");
-	*/
-
-	/* TODO: checked fread, encryption */
-	fread(buf, 1, 4, f);
-	m->tileset = BUF2INT(buf);
-
-	fread(buf, 1, 4, f);
-	m->w = BUF2INT(buf);
-
-	fread(buf, 1, 4, f);
-	m->h = BUF2INT(buf);
-
-	fread(buf, 1, 4, f);
-	m->nevent = BUF2INT(buf);
-
-	m->tiles = malloc(m->w*m->h*3*sizeof (int));
-	for(int i = 0; i < m->w*m->h*3; i++) {
-		fread(buf, 1, 4, f);
-		m->tiles[i] = BUF2INT(buf);
 	}
 
-	fread(buf, 1, 1, f);
-	if(buf[0] == '\x6f') {
+	/* TODO: checked fread, encryption */
+	m->tileset = readint(r);
+	m->w = readint(r);
+	m->h = readint(r);
+	m->nevent = readint(r);
+
+	m->tiles = malloc(m->w*m->h*3*sizeof (int));
+	for(int i = 0; i < m->w*m->h*3; i++)
+		m->tiles[i] = readint(r);
+
+	while(readbyte(r) == '\x6f') {
 		Event *e = event_load(f);
 		printf("event \"");
 		for(int i = 0; i < strlen(e->name); i++)
 			printf("\\x%hhx", e->name[i]);
 		printf("\" (0x%x)\n", e->id);
 		printf("(%d, %d), %d pages\n", e->x, e->y, e->npage);
-	} else {
-		printf("unknown entity type 0x%x\n", buf[0]);
 	}
 
 	fclose(f);
