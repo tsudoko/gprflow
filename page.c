@@ -10,6 +10,33 @@
 static const unsigned char ROUTETERM[] = "\x01\x00";
 static const unsigned char CMDTERM[] = "\x03\x00\x00\x00";
 
+int
+route_load(FILE *f, Route *r)
+{
+	unsigned char buf[BUFLEN];
+
+	fread(buf, 1, 1, f);
+	r->id = *buf;
+	fread(buf, 1, 1, f);
+	unsigned char narg = *buf;
+	printf("(parsing) narg %d\n", narg);
+	r->args = malloc(sizeof (int) * narg);
+	printf("(parsing) route args [");
+	for(int j = 0; j < narg; j++) {
+		fread(buf, 1, 4, f);
+		r->args[j] = BUF2INT(buf);
+		printf("%x ", r->args[j]);
+	}
+	printf("]\n");
+	fread(buf, 1, 2, f);
+	if(memcmp(buf, ROUTETERM, 2) != 0) {
+		printf("%d: invalid route terminator: \"\\x%x\\x%x\"\n", ftell(f)-2, buf[0], buf[1]);
+		return -1;
+	}
+
+	return 0;
+}
+
 void
 page_load(FILE *f, Page *p)
 {
@@ -20,7 +47,6 @@ page_load(FILE *f, Page *p)
 
 	fread(buf, 1, 4, f);
 	int namelen = BUF2INT(buf);
-	printf("namelen %d\n", namelen);
 	p->name = malloc(namelen);
 
 	for(int i = 0; i < namelen; i++) {
@@ -59,26 +85,7 @@ page_load(FILE *f, Page *p)
 	p->routes = malloc(sizeof *p->routes * p->nroute);
 	for(int i = 0; i < p->nroute; i++) {
 		printf("(parsing) parsing route %d\n", i);
-		fread(buf, 1, 1, f);
-		p->routes[i].id = *buf;
-		fread(buf, 1, 1, f);
-		unsigned char narg = *buf;
-		printf("(parsing) narg %d\n", narg);
-		p->routes[i].args = malloc(sizeof (int) * narg);
-		printf("(parsing) route args \"");
-		for(int j = 0; j < narg; j++) {
-			fread(buf, 1, 4, f);
-			p->routes[i].args[j] = BUF2INT(buf);
-			/*
-			fread(buf, 1, 1, f);
-			p->routes[i].args[j] = *buf;
-			*/
-			printf("%x ", p->routes[i].args[j]);
-		}
-		printf("\"\n");
-		fread(buf, 1, 2, f);
-		if(memcmp(buf, ROUTETERM, 2) != 0) {
-			printf("%d: invalid route terminator: \"\\x%x\\x%x\"\n", ftell(f)-2, buf[0], buf[1]);
+		if(route_load(f, &p->routes[i]) < 0) { /* TODO: make fatal? */
 			p->nroute = i;
 			break;
 		}
@@ -90,7 +97,7 @@ page_load(FILE *f, Page *p)
 	p->cmds = malloc(sizeof *p->cmds * p->ncmd);
 	for(int i = 0; i < p->ncmd; i++) {
 		fread(buf, 1, 1, f);
-		unsigned char narg = *buf;
+		unsigned char narg = *buf - 1;
 		fread(buf, 1, 4, f);
 		p->cmds[i].id = BUF2INT(buf);
 
@@ -100,25 +107,40 @@ page_load(FILE *f, Page *p)
 			p->cmds[i].args[j] = BUF2INT(buf);
 		}
 
-		printf("ftell nstrarg 0x%x\n", ftell(f));
+		fread(buf, 1, 1, f); /* indent */
+
 		fread(buf, 1, 1, f);
 		p->cmds[i].nstrarg = *buf;
 		p->cmds[i].strargs = malloc(sizeof (unsigned char *) * p->cmds[i].nstrarg);
 		for(int j = 0; j < p->cmds[i].nstrarg; j++) {
-			printf("ftell len 0x%x\n", ftell(f));
 			fread(buf, 1, 4, f);
 			int len = BUF2INT(buf);
 			p->cmds[i].strargs[j] = malloc(len);
 			for(int k = 0; k < len; k++) {
 				fread(buf, 1, 1, f);
-				printf("AAAAAA %c\n", *buf);
 				p->cmds[i].strargs[j][k] = *buf;
 			}
 		}
 
 		fread(buf, 1, 1, f);
 		if(*buf == '\x1') {
-			printf("gotta read move list too...\n");
+			fread(buf, 1, 5, f);
+			memcpy(p->cmds[i].movedata.something, buf, 5);
+
+			fread(buf, 1, 1, f);
+			p->cmds[i].movedata.flags = *buf;
+			
+			fread(buf, 1, 4, f);
+			p->cmds[i].movedata.nroute = BUF2INT(buf);
+
+			p->cmds[i].movedata.routes = malloc(sizeof *(p->cmds[i].movedata.routes) * (p->cmds[i].movedata.nroute));
+			for(int j = 0; j < p->cmds[i].movedata.nroute; j++) {
+				if(route_load(f, &p->cmds[i].movedata.routes[j]) < 0) { /* TODO: make fatal? */
+					p->cmds[i].movedata.nroute = j;
+					break;
+				}
+
+			}
 		} else if(*buf != '\x0') {
 			printf("%d: unexpected terminator: \\x%x\n", ftell(f)-1, *buf);
 			p->ncmd = i;
@@ -130,6 +152,19 @@ page_load(FILE *f, Page *p)
 	if(memcmp(buf, CMDTERM, 4) != 0) {
 		printf("%d: unexpected command terminator: \\x%x\\x%x\\x%x\\x%x\n", ftell(f)-4, buf[0], buf[1], buf[2], buf[3]);
 	}
+
+	fread(buf, 1, 1, f);
+	p->shadow = *buf;
+
+	fread(buf, 1, 1, f);
+	p->colw = *buf;
+
+	fread(buf, 1, 1, f);
+	p->colh = *buf;
+
+	fread(buf, 1, 1, f);
+	if(*buf != '\x7a')
+		printf("%d: unexpected page terminator: \\x%x\n", ftell(f)-1, buf[0]);
 }
 
 void
@@ -140,6 +175,9 @@ page_free(Page *p)
 		for(int j = 0; j < p->cmds[i].nstrarg; j++)
 			free(p->cmds[i].strargs[j]);
 		free(p->cmds[i].strargs);
+		for(int j = 0; j < p->cmds[i].movedata.nroute; j++)
+			free(p->cmds[i].movedata.routes[j].args);
+		free(p->cmds[i].movedata.routes);
 	}
 	free(p->cmds);
 	for(int i = 0; i < p->nroute; i++)

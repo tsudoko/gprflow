@@ -1,17 +1,25 @@
 /* this header file depends on stdio.h */
 
 typedef struct {
+	unsigned char id;
+	int *args;
+} Route;
+
+typedef struct {
 	char narg;
 	int id;
 	char *args;
 	char nstrarg;
 	char **strargs;
-} Command;
 
-typedef struct {
-	unsigned char id;
-	int *args;
-} Routecmd;
+	/* FIXME: move out or make optional, it's not used in most commands */
+	struct {
+		unsigned char something[5];
+		unsigned char flags;
+		int nroute;
+		Route *routes;
+	} movedata;
+} Command;
 
 typedef struct {
 	int id;
@@ -30,12 +38,12 @@ typedef struct {
 	unsigned char routeflags;
 
 	int nroute;
-	Routecmd *routes;
+	Route *routes;
 	int ncmd;
 	Command *cmds;
 
-	int shadow;
-	int colw, colh;
+	unsigned char shadow;
+	unsigned char colw, colh;
 } Page;
 
 void page_load(FILE *f, Page *p);

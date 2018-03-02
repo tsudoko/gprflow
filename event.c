@@ -22,11 +22,10 @@ event_load(FILE *f)
 	e->next = NULL;
 
 	fread(buf, 1, 4, f);
-	for(int i = 0; i < 4; i++)
-		printf("\\x%x", buf[i]);
-	printf("\n");
-	if(memcmp(buf, EVMAGIC, 4) != 0)
+	if(memcmp(buf, EVMAGIC, 4) != 0) {
+		printf("invalid event magic\n");
 		return NULL;
+	}
 
 	fread(buf, 1, 4, f);
 	e->id = BUF2INT(buf);
@@ -50,7 +49,6 @@ event_load(FILE *f)
 
 	fread(buf, 1, 4, f);
 	e->npage = BUF2INT(buf);
-	printf("(parsing) %d pages\n", e->npage);
 	e->pages = malloc(sizeof *e->pages * e->npage);
 
 	fread(buf, 1, 4, f);
@@ -68,6 +66,10 @@ event_load(FILE *f)
 		page_load(f, &(e->pages[i]));
 		page_print(&(e->pages[i]));
 	}
+
+	fread(buf, 1, 1, f);
+	if(*buf != '\x70')
+		printf("unexpected page list terminator: \\x%x\n", *buf);
 
 	return e;
 }

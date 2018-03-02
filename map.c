@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "page.h"
 #include "event.h"
 #include "map.h"
 
@@ -30,9 +31,11 @@ map_load(char *filename)
 	assert(BUFLEN >= MAGICLEN); /* could make this compile-time */
 	if(memcmp(buf, MAGIC, MAGICLEN) != 0)
 		return NULL;
+	/*
 	for(int i = 0; i < MAGICLEN; i++)
 		printf("\\x%x", buf[i]);
 	printf("\n");
+	*/
 
 	/* TODO: checked fread, encryption */
 	fread(buf, 1, 4, f);
