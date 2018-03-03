@@ -63,3 +63,10 @@ map_free(Map *m)
 	free(m->tiles);
 	free(m);
 }
+
+void
+map_print(Map *m)
+{
+	printf("tileset: %d\n", m->tileset);
+	printf("%d×%d, %d events\n", m->w, m->h, m->nevent);
+}

@@ -3,13 +3,6 @@
 
 #include "map.h"
 
-void
-map_print(Map *m)
-{
-	printf("tileset: %d\n", m->tileset);
-	printf("%d×%d, %d events\n", m->w, m->h, m->nevent);
-}
-
 int
 main(int argc, char **argv)
 {
