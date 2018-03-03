@@ -40,7 +40,6 @@ event_load(Reader *r)
 			e->npage = i;
 			break;
 		}
-		printf("loading page %d\n", i);
 		page_load(r, &(e->pages[i]));
 		page_print(&(e->pages[i]));
 	}

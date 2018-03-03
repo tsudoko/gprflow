@@ -148,4 +148,20 @@ page_print(Page *p)
 
 	printf("flags 0x%x routeflags 0x%x\n", p->flags, p->routeflags);
 	printf("%d routes, %d commands\n", p->nroute, p->ncmd);
+
+	for(int i = 0; i < p->ncmd; i++) {
+		printf("command %d: %x\n", i, p->cmds[i].id);
+		printf("  args: [");
+		for(int j = 0; j < p->cmds[i].narg; j++) {
+			printf("%d", p->cmds[i].args[j]);
+			if(j + 1 != p->cmds[i].narg) printf(", ");
+		}
+		printf("]\n");
+		printf("  string args: [");
+		for(int j = 0; j < p->cmds[i].nstrarg; j++) {
+			printf("\"%s\"", p->cmds[i].strargs[j]);
+			if(j + 1 != p->cmds[i].nstrarg) printf(", ");
+		}
+		printf("]\n");
+	}
 }
