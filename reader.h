@@ -1,6 +1,6 @@
 typedef struct {
 	FILE *f;
-	unsigned char buf[4]; /* TODO change to 64 or something higher after testing */
+	unsigned char buf[64];
 } Reader;
 
 void           readn(Reader *r, int n);

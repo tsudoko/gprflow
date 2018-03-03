@@ -3,34 +3,27 @@
 #include <string.h>
 
 #include "util.h"
+#include "reader.h"
 #include "page.h"
-
-#define BUFLEN 64
 
 static const unsigned char ROUTETERM[] = "\x01\x00";
 static const unsigned char CMDTERM[] = "\x03\x00\x00\x00";
 
 int
-route_load(FILE *f, Route *r)
+route_load(Reader *r, Route *ro)
 {
-	unsigned char buf[BUFLEN];
-
-	fread(buf, 1, 1, f);
-	r->id = *buf;
-	fread(buf, 1, 1, f);
-	unsigned char narg = *buf;
+	ro->id = readbyte(r);
+	unsigned char narg = readbyte(r);
 	printf("(parsing) narg %d\n", narg);
-	r->args = malloc(sizeof (int) * narg);
+	ro->args = malloc(sizeof (int) * narg);
 	printf("(parsing) route args [");
 	for(int j = 0; j < narg; j++) {
-		fread(buf, 1, 4, f);
-		r->args[j] = BUF2INT(buf);
-		printf("%x ", r->args[j]);
+		ro->args[j] = readint(r);
+		printf("%x ", ro->args[j]);
 	}
 	printf("]\n");
-	fread(buf, 1, 2, f);
-	if(memcmp(buf, ROUTETERM, 2) != 0) {
-		printf("%d: invalid route terminator: \"\\x%x\\x%x\"\n", ftell(f)-2, buf[0], buf[1]);
+	if(readncmp(r, ROUTETERM, 2) != 0) {
+		printf("%d: invalid route terminator: \"\\x%x\\x%x\"\n", ftell(r->f)-2, r->buf[0], r->buf[1]);
 		return -1;
 	}
 
@@ -38,133 +31,83 @@ route_load(FILE *f, Route *r)
 }
 
 void
-page_load(FILE *f, Page *p)
+page_load(Reader *r, Page *p)
 {
-	unsigned char buf[BUFLEN];
+	p->something = readint(r);
+	p->name = readstr(r);
+	p->direction = readbyte(r);
+	p->frame = readbyte(r);
+	p->opacity = readbyte(r);
+	p->rendermode = readbyte(r);
+	readn(r, 1 + 4 + 4*4 + 4*4);
+	memcpy(p->conditions, r->buf, 1 + 4 + 4*4 + 4*4);
+	readn(r, 4);
+	memcpy(p->movement, r->buf, 4);
+	p->flags = readbyte(r);
+	p->routeflags = readbyte(r);
 
-	fread(buf, 1, 4, f);
-	p->something = BUF2INT(buf);
-
-	fread(buf, 1, 4, f);
-	int namelen = BUF2INT(buf);
-	p->name = malloc(namelen);
-
-	for(int i = 0; i < namelen; i++) {
-		fread(buf, 1, 1, f);
-		p->name[i] = *buf;
-	}
-
-	fread(buf, 1, 1, f);
-	p->direction = *buf;
-
-	fread(buf, 1, 1, f);
-	p->frame = *buf;
-
-	fread(buf, 1, 1, f);
-	p->opacity = *buf;
-
-	fread(buf, 1, 1, f);
-	p->rendermode = *buf;
-
-	fread(buf, 1, 1 + 4 + 4*4 + 4*4, f);
-	memcpy(p->conditions, buf, 1 + 4 + 4*4 + 4*4);
-
-	fread(buf, 1, 4, f);
-	memcpy(p->movement, buf, 4);
-
-	fread(buf, 1, 1, f);
-	p->flags = *buf;
-
-	fread(buf, 1, 1, f);
-	p->routeflags = *buf;
-
-	fread(buf, 1, 4, f);
-	p->nroute = BUF2INT(buf);
+	p->nroute = readint(r);
 	printf("(parsing) %d routes\n", p->nroute);
 
 	p->routes = malloc(sizeof *p->routes * p->nroute);
 	for(int i = 0; i < p->nroute; i++) {
 		printf("(parsing) parsing route %d\n", i);
-		if(route_load(f, &p->routes[i]) < 0) { /* TODO: make fatal? */
+		if(route_load(r, &p->routes[i]) < 0) { /* TODO: make fatal? */
 			p->nroute = i;
 			break;
 		}
 	}
 
-	fread(buf, 1, 4, f);
-	p->ncmd = BUF2INT(buf);
-
+	p->ncmd = readint(r);
 	p->cmds = malloc(sizeof *p->cmds * p->ncmd);
 	for(int i = 0; i < p->ncmd; i++) {
-		fread(buf, 1, 1, f);
-		unsigned char narg = *buf - 1;
-		fread(buf, 1, 4, f);
-		p->cmds[i].id = BUF2INT(buf);
+		unsigned char narg = readbyte(r) - 1;
+		p->cmds[i].id = readint(r);
 
 		p->cmds[i].args = malloc(sizeof (int) * narg);
 		for(int j = 0; j < narg; j++) {
-			fread(buf, 1, 4, f);
-			p->cmds[i].args[j] = BUF2INT(buf);
+			p->cmds[i].args[j] = readint(r);
 		}
 
-		fread(buf, 1, 1, f); /* indent */
+		readn(r, 1); /* indent */
 
-		fread(buf, 1, 1, f);
-		p->cmds[i].nstrarg = *buf;
+		p->cmds[i].nstrarg = readbyte(r);
 		p->cmds[i].strargs = malloc(sizeof (unsigned char *) * p->cmds[i].nstrarg);
-		for(int j = 0; j < p->cmds[i].nstrarg; j++) {
-			fread(buf, 1, 4, f);
-			int len = BUF2INT(buf);
-			p->cmds[i].strargs[j] = malloc(len);
-			for(int k = 0; k < len; k++) {
-				fread(buf, 1, 1, f);
-				p->cmds[i].strargs[j][k] = *buf;
-			}
-		}
+		for(int j = 0; j < p->cmds[i].nstrarg; j++)
+			p->cmds[i].strargs[j] = readstr(r);
 
-		fread(buf, 1, 1, f);
-		if(*buf == '\x1') {
-			fread(buf, 1, 5, f);
-			memcpy(p->cmds[i].movedata.something, buf, 5);
-
-			fread(buf, 1, 1, f);
-			p->cmds[i].movedata.flags = *buf;
-			
-			fread(buf, 1, 4, f);
-			p->cmds[i].movedata.nroute = BUF2INT(buf);
+		readn(r, 1);
+		if(r->buf[0] == '\x1') {
+			readn(r, 5);
+			memcpy(p->cmds[i].movedata.something, r->buf, 5);
+			p->cmds[i].movedata.flags = readbyte(r);
+			p->cmds[i].movedata.nroute = readint(r);
 
 			p->cmds[i].movedata.routes = malloc(sizeof *(p->cmds[i].movedata.routes) * (p->cmds[i].movedata.nroute));
 			for(int j = 0; j < p->cmds[i].movedata.nroute; j++) {
-				if(route_load(f, &p->cmds[i].movedata.routes[j]) < 0) { /* TODO: make fatal? */
+				if(route_load(r, &p->cmds[i].movedata.routes[j]) < 0) { /* TODO: make fatal? */
 					p->cmds[i].movedata.nroute = j;
 					break;
 				}
 
 			}
-		} else if(*buf != '\x0') {
-			printf("%d: unexpected terminator: \\x%x\n", ftell(f)-1, *buf);
+		} else if(r->buf[0] != '\x0') {
+			printf("%d: unexpected terminator: \\x%x\n", ftell(r->f)-1, r->buf[0]);
 			p->ncmd = i;
 			break;
 		}
 	}
 
-	fread(buf, 1, 4, f);
-	if(memcmp(buf, CMDTERM, 4) != 0) {
-		printf("%d: unexpected command terminator: \\x%x\\x%x\\x%x\\x%x\n", ftell(f)-4, buf[0], buf[1], buf[2], buf[3]);
+	if(readncmp(r, CMDTERM, 4) != 0) {
+		printf("%d: unexpected command terminator: \\x%x\\x%x\\x%x\\x%x\n", ftell(r->f)-4, r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
 	}
 
-	fread(buf, 1, 1, f);
-	p->shadow = *buf;
+	p->shadow = readbyte(r);
+	p->colw = readbyte(r);
+	p->colh = readbyte(r);
 
-	fread(buf, 1, 1, f);
-	p->colw = *buf;
-
-	fread(buf, 1, 1, f);
-	p->colh = *buf;
-
-	fread(buf, 1, 1, f);
-	if(*buf != '\x7a')
-		printf("%d: unexpected page terminator: \\x%x\n", ftell(f)-1, buf[0]);
+	if(readbyte(r) != '\x7a')
+		printf("%d: unexpected page terminator: \\x%x\n", ftell(r->f)-1, r->buf[0]);
 }
 
 void

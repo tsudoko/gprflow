@@ -1,4 +1,4 @@
-/* this header file depends on stdio.h */
+/* this header file depends on reader.h */
 
 typedef struct {
 	unsigned char id;
@@ -46,6 +46,6 @@ typedef struct {
 	unsigned char colw, colh;
 } Page;
 
-void page_load(FILE *f, Page *p);
+void page_load(Reader *r, Page *p);
 void page_free(Page *p);
 void page_print(Page *p);
