@@ -7,7 +7,7 @@
 #include "reader.h"
 #include "page.h"
 #include "event.h"
-#include "map.h"
+#include "../map.h"
 
 static const unsigned char MAGIC[] = \
 	"\0\0\0\0\0"
