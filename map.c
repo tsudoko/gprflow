@@ -9,9 +9,6 @@
 #include "event.h"
 #include "map.h"
 
-#define BUFLEN 64
-#define nelem(x) (sizeof(x)/sizeof((x)[0]))
-
 static const unsigned char MAGIC[] = \
 	"\0\0\0\0\0"
 	"\0\0\0\0\0"
@@ -27,7 +24,6 @@ map_load(char *filename)
 	Reader reader, *r = &reader;
 	FILE *f = fopen(filename, "rb");
 	Map *m = malloc(sizeof *m);
-	unsigned char buf[BUFLEN];
 
 	reader.f = f;
 

@@ -8,8 +8,6 @@
 #include "page.h"
 #include "event.h"
 
-#define BUFLEN 4
-
 static const unsigned char EVMAGIC[] = "90\0\0";
 static const unsigned char PAGEMAGIC[] = "\0\0\0\0";
 
@@ -17,8 +15,6 @@ Event *
 event_load(Reader *r)
 {
 	Event *e = malloc(sizeof *e);
-	unsigned char buf[BUFLEN];
-	int namelen;
 
 	e->next = NULL;
 
