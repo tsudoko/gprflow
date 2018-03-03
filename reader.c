@@ -11,6 +11,7 @@ void
 readn(Reader *r, int n)
 {
 	assert(n <= nelem(r->buf));
+	/* TODO: checked fread, encryption */
 	fread(r->buf, 1, n, r->f);
 }
 

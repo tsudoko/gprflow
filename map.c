@@ -32,7 +32,6 @@ map_load(char *filename)
 		return NULL;
 	}
 
-	/* TODO: checked fread, encryption */
 	m->tileset = readint(r);
 	m->w = readint(r);
 	m->h = readint(r);
