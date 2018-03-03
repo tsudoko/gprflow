@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "util.h"
-#include "reader.h"
+#include "../reader.h"
 #include "page.h"
 #include "event.h"
 

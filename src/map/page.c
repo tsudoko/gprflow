@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "util.h"
-#include "reader.h"
+#include "../reader.h"
 #include "page.h"
 
 static const unsigned char ROUTETERM[] = "\x01\x00";
