@@ -6,11 +6,11 @@ typedef struct {
 } Route;
 
 typedef struct {
-	char narg;
+	unsigned char narg;
 	int id;
-	char *args;
-	char nstrarg;
-	char **strargs;
+	unsigned char *args;
+	unsigned char nstrarg;
+	unsigned char **strargs;
 
 	/* FIXME: move out or make optional, it's not used in most commands */
 	struct {
