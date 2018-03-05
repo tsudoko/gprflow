@@ -5,7 +5,7 @@
 #include "reader.h"
 
 void
-type_load(Reader *r, Type *t)
+type_loadproject(Reader *r, Type *t)
 {
 	t->name = readstr(r);
 	t->nfield = readint(r);
@@ -57,8 +57,12 @@ type_load(Reader *r, Type *t)
 	assert(n >= t->nfield);
 	for(i = 0; i < n; i++)
 		t->fields[i].default = readint(r);
+}
 
-	/* TODO data from the dat file here */
+void
+type_loaddat(Reader *r, Type *t)
+{
+	TODO;
 }
 
 void
@@ -90,6 +94,13 @@ database_load(char *projectpath, char *datpath)
 	d->n = readint(r);
 	d->t = malloc(d->n * sizeof (int));
 	for(int i = 0; i < d->n; i++)
-		type_load(&r, d->t + i);
-	
+		type_loadproject(&r, d->t + i);
+	fclose(r.f);
+
+	r.f = fopen(datpath, "rb");
+	for(int i = 0; i < d->n; i++)
+		type_loaddat(&r, d->t + i);
+	fclose(r.f);
+
+	return d;
 }
