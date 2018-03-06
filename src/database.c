@@ -81,7 +81,7 @@ void
 type_loaddat(Reader *r, Type *t)
 {
 	if(readncmp(r, (unsigned char *)"\xfe\xff\xff\xff", 4) != 0)
-		printf("unexpected dat separator: \\x%x\\x%x\\x%x\\x%x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[4]);
+		printf("unexpected dat separator: \\x%x\\x%x\\x%x\\x%x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
 
 	t->something = readint(r);
 	int nfield = readint(r);
@@ -122,8 +122,13 @@ type_free(Type *t)
 		free(t->fields[i].args);
 	}
 	free(t->fields);
-	for(int i = 0; i < t->ndata; i++)
+	for(int i = 0; i < t->ndata; i++) {
 		free(t->data[i].name);
+		free(t->data[i].ints);
+		for(int j = 0; j < t->data[i].nstr; j++)
+			free(t->data[i].strs[j]);
+		free(t->data[i].strs);
+	}
 	free(t->desc);
 	free(t);
 }
