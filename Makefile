@@ -5,7 +5,8 @@ OFILES = src/main.o \
 	src/reader.o \
 	src/map/map.o \
 	src/map/event.o \
-	src/map/page.o
+	src/map/page.o \
+	src/database.o
 
 $(TARG): $(OFILES)
 	$(CC) -o $@ $(OFILES)
