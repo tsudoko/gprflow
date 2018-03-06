@@ -12,12 +12,12 @@ static const unsigned char DATMAGIC[] = "W\0\0OL\0FM\0\xc1";
 void
 type_countvalues(Type *t, int *nint, int *nstr)
 {
-	nint = 0, nstr = 0;
+	*nint = 0, *nstr = 0;
 	for(int i = 0; i < t->nfield; i++)
 		if(t->fields[i].offset >= OFFSTR)
-			nstr++;
+			(*nstr)++;
 		else
-			nint++;
+			(*nint)++;
 }
 
 void
@@ -32,7 +32,8 @@ type_loadproject(Reader *r, Type *t)
 		t->fields[i].name = readstr(r);
 
 	t->ndata = readint(r);
-	printf("project ndata: %d\n", t->ndata);
+	/* printf("project ndata: %d\n", t->ndata); */
+	t->data = malloc(sizeof *t->data * t->ndata);
 	for(int i = 0; i < t->ndata; i++)
 		t->data[i].name = readstr(r);
 
@@ -41,7 +42,7 @@ type_loadproject(Reader *r, Type *t)
 	int n = readint(r), i;
 	printf("field list size: %d\n", n);
 	assert(n >= t->nfield);
-	for(i = 0; i < n; i++)
+	for(i = 0; i < t->nfield; i++)
 		t->fields[i].type = readbyte(r);
 	printf("real field list end: 0x%x\n", ftell(r->f));
 	fseek(r->f, n-i, SEEK_CUR);
@@ -141,14 +142,16 @@ database_load(char *projectpath, char *datpath)
 
 	r.f = fopen(projectpath, "rb");
 	d->n = readint(&r);
-	d->t = malloc(d->n * sizeof (int));
+	d->t = malloc(sizeof *d->t * d->n);
 	for(int i = 0; i < d->n; i++)
 		type_loadproject(&r, d->t + i);
 	fclose(r.f);
 
+	printf("にゃーん\n");
+
 	r.f = fopen(datpath, "rb");
 	assert(readbyte(&r) == 0); /* encrypted if !0 */
-	if(readncmp(&r, DATMAGIC, sizeof DATMAGIC) != 0) {
+	if(readncmp(&r, DATMAGIC, sizeof DATMAGIC-1) != 0) {
 		printf("unexpected dat magic\n");
 		return NULL;
 	}
@@ -159,9 +162,16 @@ database_load(char *projectpath, char *datpath)
 	for(int i = 0; i < d->n; i++)
 		type_loaddat(&r, d->t + i);
 
-	if(readbyte(&r) != '\xc1')
+	if(readbyte(&r) != (unsigned char)'\xc1')
 		printf("unexpected dat terminator: \\x%x\n", r.buf[0]);
 	fclose(r.f);
 
 	return d;
+}
+
+void
+database_free(Database *d)
+{
+	for(int i = 0; i < d->n; i++)
+		type_free(d->t + i);
 }

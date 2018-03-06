@@ -32,3 +32,6 @@ typedef struct {
 	int n;
 	Type *t;
 } Database;
+
+Database *database_load(char *, char *);
+void database_free(Database *);
