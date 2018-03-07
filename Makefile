@@ -11,7 +11,7 @@ OFILES = src/main.o \
 $(TARG): $(OFILES)
 	$(CC) $(CFLAGS) -o $@ $(OFILES)
 
-src/sjistab.c: res/SHIFTJIS.TXT
+src/sjistab.c: res/SHIFTJIS.TXT res/sjistabgen.awk
 	awk -f res/sjistabgen.awk $< > $@
 
 clean:
