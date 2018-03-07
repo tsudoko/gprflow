@@ -9,7 +9,10 @@ OFILES = src/main.o \
 	src/database.o
 
 $(TARG): $(OFILES)
-	$(CC) -o $@ $(OFILES)
+	$(CC) $(CFLAGS) -o $@ $(OFILES)
+
+src/sjistab.c: res/SHIFTJIS.TXT
+	awk -f res/sjistabgen.awk $< > $@
 
 clean:
-	rm -f $(TARG) $(OFILES)
+	rm -f $(TARG) $(OFILES) src/sjistab.c
