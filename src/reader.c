@@ -8,7 +8,7 @@
 #define nelem(x) (sizeof(x)/sizeof((x)[0]))
 
 void
-readn(Reader *r, int n)
+rloadn(Reader *r, int n)
 {
 	assert(n <= nelem(r->buf));
 	/* TODO: checked fread, encryption */
@@ -18,14 +18,14 @@ readn(Reader *r, int n)
 unsigned char
 readbyte(Reader *r)
 {
-	readn(r, 1);
+	rloadn(r, 1);
 	return *r->buf;
 }
 
 int
 readint(Reader *r)
 {
-	readn(r, 4);
+	rloadn(r, 4);
 	return r->buf[0] | (r->buf[1] << 8) | (r->buf[2] << 16) | (r->buf[3] << 24);
 }
 
@@ -37,11 +37,11 @@ readstr(Reader *r)
 	unsigned char *str = malloc(len), *b = str;
 	int n = len/nelem(r->buf);
 	for(int i = 0; i < n; i++) {
-		readn(r, nelem(r->buf));
+		rloadn(r, nelem(r->buf));
 		memcpy(b, r->buf, nelem(r->buf));
 		b += nelem(r->buf);
 	}
-	readn(r, len%nelem(r->buf));
+	rloadn(r, len%nelem(r->buf));
 	memcpy(b, r->buf, len%nelem(r->buf));
 	assert(str[len-1] == '\0');
 	return str;
@@ -55,11 +55,11 @@ readncmp(Reader *r, const unsigned char *s2, int len)
 	unsigned char *str = malloc(len), *b = str;
 	int n = len/nelem(r->buf), ret;
 	for(int i = 0; i < n; i++) {
-		readn(r, nelem(r->buf));
+		rloadn(r, nelem(r->buf));
 		if((ret = memcmp(r->buf, s2, nelem(r->buf))) != 0)
 			return ret;
 		s2 += nelem(r->buf);
 	}
-	readn(r, len%nelem(r->buf));
+	rloadn(r, len%nelem(r->buf));
 	return memcmp(r->buf, s2, len%nelem(r->buf));
 }

@@ -3,7 +3,7 @@ typedef struct {
 	unsigned char buf[64];
 } Reader;
 
-void           readn(Reader *r, int n);
+void           rloadn(Reader *r, int n);
 unsigned char  readbyte(Reader *r);
 int            readint(Reader *r);
 unsigned char *readstr(Reader *r);

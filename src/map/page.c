@@ -39,9 +39,9 @@ page_load(Reader *r, Page *p)
 	p->frame = readbyte(r);
 	p->opacity = readbyte(r);
 	p->rendermode = readbyte(r);
-	readn(r, 1 + 4 + 4*4 + 4*4);
+	rloadn(r, 1 + 4 + 4*4 + 4*4);
 	memcpy(p->conditions, r->buf, 1 + 4 + 4*4 + 4*4);
-	readn(r, 4);
+	rloadn(r, 4);
 	memcpy(p->movement, r->buf, 4);
 	p->flags = readbyte(r);
 	p->routeflags = readbyte(r);
@@ -69,16 +69,16 @@ page_load(Reader *r, Page *p)
 			p->cmds[i].args[j] = readint(r);
 		}
 
-		readn(r, 1); /* indent */
+		rloadn(r, 1); /* indent */
 
 		p->cmds[i].nstrarg = readbyte(r);
 		p->cmds[i].strargs = malloc(sizeof (unsigned char *) * p->cmds[i].nstrarg);
 		for(int j = 0; j < p->cmds[i].nstrarg; j++)
 			p->cmds[i].strargs[j] = readstr(r);
 
-		readn(r, 1);
+		rloadn(r, 1);
 		if(r->buf[0] == '\x1') {
-			readn(r, 5);
+			rloadn(r, 5);
 			memcpy(p->cmds[i].movedata.something, r->buf, 5);
 			p->cmds[i].movedata.flags = readbyte(r);
 			p->cmds[i].movedata.nroute = readint(r);
