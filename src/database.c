@@ -132,6 +132,7 @@ type_free(Type *t)
 			free(t->data[i].strs[j]);
 		free(t->data[i].strs);
 	}
+	free(t->data);
 	free(t->desc);
 }
 
@@ -176,4 +177,5 @@ database_free(Database *d)
 	for(int i = 0; i < d->n; i++)
 		type_free(d->t + i);
 	free(d->t);
+	free(d);
 }
