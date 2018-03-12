@@ -34,4 +34,5 @@ typedef struct {
 } Database;
 
 Database *database_load(char *, char *);
+void database_print(Database *);
 void database_free(Database *);

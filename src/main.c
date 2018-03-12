@@ -3,8 +3,6 @@
 
 #include "database.h"
 
-#define database_print(x)
-
 int
 main(int argc, char **argv)
 {

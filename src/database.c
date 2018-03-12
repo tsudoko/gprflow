@@ -136,6 +136,24 @@ type_free(Type *t)
 	free(t->desc);
 }
 
+void
+type_print(Type *t)
+{
+	printf("%s\n", t->name);
+	printf("%s\n", t->desc);
+	printf("  %d fields, %d data\n", t->nfield, t->ndata);
+	for(int i = 0; i < t->ndata; i++) {
+		printf("  %s\n", t->data[i].name);
+		for(int f = 0; f < t->nfield; f++) {
+			printf("    %s (%d): ", t->fields[f].name, t->fields[f].type);
+			if(t->fields[f].offset >= OFFSTR)
+				printf("%s\n", t->data[i].strs[f]);
+			else
+				printf("%d\n", t->data[i].ints[f]);
+		}
+	}
+}
+
 Database *
 database_load(char *projectpath, char *datpath)
 {
@@ -178,4 +196,14 @@ database_free(Database *d)
 		type_free(d->t + i);
 	free(d->t);
 	free(d);
+}
+
+void
+database_print(Database *d)
+{
+	printf("%d types\n", d->n);
+	for(int i = 0; i < d->n; i++) {
+		printf("%d: ", i);
+		type_print(d->t + i);
+	}
 }
