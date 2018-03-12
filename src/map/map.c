@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iconv.h>
+
 #include "util.h"
 #include "../reader.h"
 #include "page.h"
@@ -21,11 +23,11 @@ static const unsigned char MAGICLEN = 34; /* XXX */
 Map *
 map_load(char *filename)
 {
-	Reader reader, *r = &reader;
+	Reader *r = rnew("SHIFT_JIS");
 	FILE *f = fopen(filename, "rb");
 	Map *m = malloc(sizeof *m);
 
-	reader.f = f;
+	r->f = f;
 
 	if(readncmp(r, MAGIC, MAGICLEN) != 0) {
 		printf("%x %x %x %x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
@@ -54,6 +56,7 @@ map_load(char *filename)
 		printf("unexpected event list terminator: \\x%x\n", r->buf[0]);
 
 	fclose(f);
+	rfree(r);
 	return m;
 }
 

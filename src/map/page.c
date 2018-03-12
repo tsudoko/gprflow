@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iconv.h>
+
 #include "util.h"
 #include "../reader.h"
 #include "page.h"

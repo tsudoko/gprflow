@@ -3,9 +3,32 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define _POSIX_SOURCE
+#include <errno.h>
+#include <iconv.h>
+
 #include "reader.h"
 
 #define nelem(x) (sizeof(x)/sizeof((x)[0]))
+
+Reader *
+rnew(char *strenc)
+{
+	Reader *r = malloc(sizeof *r);
+	if(strenc != NULL)
+		r->iconv = iconv_open("UTF-8", strenc);
+	else
+		r->iconv = NULL;
+	return r;
+}
+
+void
+rfree(Reader *r)
+{
+	if(r->iconv != NULL)
+		iconv_close(r->iconv);
+	free(r);
+}
 
 void
 rloadn(Reader *r, int n)
@@ -30,7 +53,7 @@ readint(Reader *r)
 }
 
 unsigned char *
-readstr(Reader *r)
+readbytearray(Reader *r, int *len_)
 {
 	int len = readint(r);
 	assert(len > 0);
@@ -43,8 +66,74 @@ readstr(Reader *r)
 	}
 	rloadn(r, len%nelem(r->buf));
 	memcpy(b, r->buf, len%nelem(r->buf));
+	if(len_ != NULL)
+		*len_ = len;
+	return str;
+}
+
+static inline unsigned char *
+readstrraw(Reader *r)
+{
+	int len;
+	unsigned char *str = readbytearray(r, &len);
 	assert(str[len-1] == '\0');
 	return str;
+}
+
+#define BUFLEN 64
+static inline unsigned char *
+readstriconv(Reader *r)
+{
+	int totalleft = readint(r);
+	assert(totalleft > 0);
+
+	size_t inleft = 0;
+	char in[BUFLEN], *ip = in;
+	size_t outlen = BUFLEN, outleft = outlen;
+	char *out = malloc(outlen), *op = out;
+	while(totalleft) {
+		int nread = BUFLEN - inleft;
+		if(totalleft-inleft < nread)
+			nread = totalleft-inleft;
+
+		rloadn(r, nread);
+		memcpy(in+inleft, r->buf, nread);
+		inleft += nread;
+
+		ip = in;
+		int iow = iconv(r->iconv, &ip, &inleft, &op, &outleft);
+		totalleft -= ip-in;
+
+		if(in != ip && inleft)
+			memmove(in, ip, inleft);
+
+		if(iow != (size_t)-1)
+			continue;
+
+		if(errno == E2BIG) {
+			outlen += BUFLEN;
+			outleft += BUFLEN;
+			char *new = realloc(out, outlen);
+			assert(new != NULL);
+			out = new;
+			op = out + (outlen-outleft);
+		} else if(errno != EINVAL) {
+			/* FIXME: reader.c shouldn't output anything directly */
+			perror("iconv: unexpected error");
+		}
+	}
+	assert(op[-1] == '\0');
+	return (unsigned char *)out;
+}
+#undef BUFLEN
+
+unsigned char *
+readstr(Reader *r)
+{
+	if(r->iconv != NULL)
+		return readstriconv(r);
+	else
+		return readstrraw(r);
 }
 
 /* guaranteed to leave the first differing part of the string in r->buf */

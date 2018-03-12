@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <iconv.h>
+
 #include "reader.h"
 #include "database.h"
 
@@ -137,35 +139,35 @@ type_free(Type *t)
 Database *
 database_load(char *projectpath, char *datpath)
 {
-	Reader r;
+	Reader *r = rnew("SHIFT_JIS");
 	Database *d = malloc(sizeof *d);
 
-	r.f = fopen(projectpath, "rb");
-	d->n = readint(&r);
+	r->f = fopen(projectpath, "rb");
+	d->n = readint(r);
 	d->t = malloc(sizeof *d->t * d->n);
 	for(int i = 0; i < d->n; i++)
-		type_loadproject(&r, d->t + i);
-	fclose(r.f);
+		type_loadproject(r, d->t + i);
+	fclose(r->f);
 
 	printf("にゃーん\n");
 
-	r.f = fopen(datpath, "rb");
-	assert(readbyte(&r) == 0); /* encrypted if !0 */
-	if(readncmp(&r, DATMAGIC, sizeof DATMAGIC-1) != 0) {
+	r->f = fopen(datpath, "rb");
+	assert(readbyte(r) == 0); /* encrypted if !0 */
+	if(readncmp(r, DATMAGIC, sizeof DATMAGIC-1) != 0) {
 		printf("unexpected dat magic\n");
 		return NULL;
 	}
 
-	int dn = readint(&r);
+	int dn = readint(r);
 	assert(dn == d->n);
 
 	for(int i = 0; i < d->n; i++)
-		type_loaddat(&r, d->t + i);
+		type_loaddat(r, d->t + i);
 
-	if(readbyte(&r) != (unsigned char)'\xc1')
-		printf("unexpected dat terminator: \\x%x\n", r.buf[0]);
-	fclose(r.f);
-
+	if(readbyte(r) != (unsigned char)'\xc1')
+		printf("unexpected dat terminator: \\x%x\n", r->buf[0]);
+	fclose(r->f);
+	rfree(r);
 	return d;
 }
 
