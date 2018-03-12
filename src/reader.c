@@ -141,7 +141,6 @@ readstr(Reader *r)
 int
 readncmp(Reader *r, const unsigned char *s2, int len)
 {
-	unsigned char *str = malloc(len), *b = str;
 	int n = len/nelem(r->buf), ret;
 	for(int i = 0; i < n; i++) {
 		rloadn(r, nelem(r->buf));
