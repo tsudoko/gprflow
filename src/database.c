@@ -147,9 +147,9 @@ type_print(Type *t)
 		for(int f = 0; f < t->nfield; f++) {
 			printf("    %s (%d): ", t->fields[f].name, t->fields[f].type);
 			if(t->fields[f].offset >= OFFSTR)
-				printf("%s\n", t->data[i].strs[f]);
+				printf("%s\n", t->data[i].strs[t->fields[f].offset - OFFSTR]);
 			else
-				printf("%d\n", t->data[i].ints[f]);
+				printf("%d\n", t->data[i].ints[t->fields[f].offset - OFFINT]);
 		}
 	}
 }
