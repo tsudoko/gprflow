@@ -11,6 +11,30 @@ static const int OFFINT = 0x3e8;
 static const int OFFSTR = 0x7d0;
 static const unsigned char DATMAGIC[] = "W\0\0OL\0FM\0\xc1";
 
+const char *
+field_typestr(Field *f)
+{
+	switch(f->type) {
+	case FieldRegular:   return "Regular"; break;
+	case FieldFilename:  return "Filename"; break;
+	case FieldReference: return "Reference"; break;
+	case FieldEnum:      return "Enum"; break;
+	default:             return "???";
+	}
+}
+
+const char *
+field_refdeststr(Field *f)
+{
+	switch(f->args[0]) {
+	case RefSystemDatabase: return "SystemDatabase"; break;
+	case RefDataBase:       return "DataBase"; break;
+	case RefCDataBase:      return "CDataBase"; break;
+	case RefCommonEvent:    return "CommonEvent"; break;
+	default:                return "???";
+	}
+}
+
 void
 type_countvalues(Type *t, int *nint, int *nstr)
 {
@@ -69,6 +93,8 @@ type_loadproject(Reader *r, Type *t)
 	for(i = 0; i < n; i++) {
 		Field *f = &t->fields[i];
 		f->narg = readint(r);
+		if(f->type == FieldReference)
+			assert(f->narg == 3);
 		f->args = malloc(sizeof *f->args * f->narg);
 		for(int j = 0; j < f->narg; j++)
 			f->args[j] = readint(r);
@@ -142,10 +168,18 @@ type_print(Type *t)
 	printf("%s\n", t->name);
 	printf("%s\n", t->desc);
 	printf("  %d fields, %d data\n", t->nfield, t->ndata);
+	for(int f = 0; f < t->nfield; f++) {
+		printf("  - %s: %s<%s>[%d]", t->fields[f].name, field_typestr(&t->fields[f]), (t->fields[f].offset >= OFFSTR ? "str" : "int"), t->fields[f].narg);
+
+
+		if(t->fields[f].type == FieldReference)
+			printf("\t-> %s[%d]", field_refdeststr(&t->fields[f]), t->fields[f].args[1]);
+		printf("\n");
+	}
 	for(int i = 0; i < t->ndata; i++) {
 		printf("  %s\n", t->data[i].name);
 		for(int f = 0; f < t->nfield; f++) {
-			printf("    %s (%d): ", t->fields[f].name, t->fields[f].type);
+			printf("    %s: ", t->fields[f].name);
 			if(t->fields[f].offset >= OFFSTR)
 				printf("%s\n", t->data[i].strs[t->fields[f].offset - OFFSTR]);
 			else
