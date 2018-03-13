@@ -41,10 +41,10 @@ enum {
 };
 
 enum {
-	RefSystemDatabase, /* システムデータベース */
-	RefDataBase,       /* ユーザーデータベース */
-	RefCDataBase,      /* 可変データベース */
-	RefCommonEvent,    /* コモンイベント */
+	RefSysDatabase, /* システムデータベース */
+	RefDataBase,    /* ユーザーデータベース */
+	RefCDataBase,   /* 可変データベース */
+	RefCommonEvent, /* コモンイベント */
 };
 
 Database *database_load(char *, char *);

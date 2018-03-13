@@ -27,11 +27,11 @@ const char *
 field_refdeststr(Field *f)
 {
 	switch(f->args[0]) {
-	case RefSystemDatabase: return "SystemDatabase"; break;
-	case RefDataBase:       return "DataBase"; break;
-	case RefCDataBase:      return "CDataBase"; break;
-	case RefCommonEvent:    return "CommonEvent"; break;
-	default:                return "???";
+	case RefSysDatabase: return "SysDatabase"; break;
+	case RefDataBase:    return "DataBase"; break;
+	case RefCDataBase:   return "CDataBase"; break;
+	case RefCommonEvent: return "CommonEvent"; break;
+	default:             return "???";
 	}
 }
 
