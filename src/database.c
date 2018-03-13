@@ -51,14 +51,12 @@ type_loadproject(Reader *r, Type *t)
 {
 	t->name = readstr(r);
 	t->nfield = readint(r);
-	printf("project nfield: %d\n", t->nfield);
 
 	t->fields = malloc(sizeof *t->fields * t->nfield);
 	for(int i = 0; i < t->nfield; i++)
 		t->fields[i].name = readstr(r);
 
 	t->ndata = readint(r);
-	/* printf("project ndata: %d\n", t->ndata); */
 	t->data = malloc(sizeof *t->data * t->ndata);
 	for(int i = 0; i < t->ndata; i++)
 		t->data[i].name = readstr(r);
@@ -66,11 +64,9 @@ type_loadproject(Reader *r, Type *t)
 	t->desc = readstr(r);
 
 	int n = readint(r), i;
-	printf("field list size: %d\n", n);
 	assert(n >= t->nfield);
 	for(i = 0; i < t->nfield; i++)
 		t->fields[i].type = readbyte(r);
-	printf("real field list end: 0x%x\n", ftell(r->f));
 	fseek(r->f, n-i, SEEK_CUR);
 
 	n = readint(r);
@@ -114,13 +110,11 @@ type_loaddat(Reader *r, Type *t)
 
 	t->something = readint(r);
 	int nfield = readint(r);
-	printf("dat nfield: %d\n", nfield);
 	assert(nfield <= t->nfield);
 	for(int i = 0; i < nfield; i++)
 		t->fields[i].offset = readint(r);
 
 	int ndata = readint(r), nint, nstr;
-	printf("dat ndata: %d\n", ndata);
 	assert(ndata <= t->ndata);
 
 	type_countvalues(t, &nint, &nstr);

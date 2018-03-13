@@ -45,10 +45,7 @@ map_load(char *filename)
 
 	while(readbyte(r) == '\x6f') {
 		Event *e = event_load(r);
-		printf("event \"");
-		for(int i = 0; i < strlen(e->name); i++)
-			printf("\\x%hhx", e->name[i]);
-		printf("\" (0x%x)\n", e->id);
+		printf("event \"%s\" (0x%x)\n", e->name, e->id);
 		printf("(%d, %d), %d pages\n", e->x, e->y, e->npage);
 	}
 
