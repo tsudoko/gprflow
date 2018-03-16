@@ -2,11 +2,11 @@ typedef struct {
 	unsigned int tileset;
 
 	unsigned int w, h;
-	unsigned int nevent;
+	unsigned int nev;
 
 	unsigned int *tiles; /* w*h*3 */
 
-	/* Event *ev; */
+	Event *evs;
 } Map;
 
 Map *map_load(char *filename);

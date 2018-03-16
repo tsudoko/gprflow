@@ -7,22 +7,20 @@
 
 #include "util.h"
 #include "../reader.h"
+#include "../route.h"
+#include "../command.h"
 #include "page.h"
 #include "event.h"
 
 static const unsigned char EVMAGIC[] = "90\0\0";
 static const unsigned char PAGEMAGIC[] = "\0\0\0\0";
 
-Event *
-event_load(Reader *r)
+void
+event_load(Reader *r, Event *e)
 {
-	Event *e = malloc(sizeof *e);
-
-	e->next = NULL;
-
 	if(readncmp(r, EVMAGIC, 4) != 0) {
 		printf("invalid event magic\n");
-		return NULL;
+		return;
 	}
 
 	e->id = readint(r);
@@ -33,8 +31,10 @@ event_load(Reader *r)
 	e->npage = readint(r);
 	e->pages = malloc(sizeof *e->pages * e->npage);
 
-	if(readncmp(r, PAGEMAGIC, 4) != 0)
-		return NULL;
+	if(readncmp(r, PAGEMAGIC, 4) != 0) {
+		printf("unexpected page magic\n");
+		return;
+	}
 
 	for(int i = 0; i < e->npage; i++) {
 		if(readbyte(r) != '\x79') {
@@ -42,20 +42,19 @@ event_load(Reader *r)
 			e->npage = i;
 			break;
 		}
-		page_load(r, &(e->pages[i]));
-		page_print(&(e->pages[i]));
+		page_load(r, &e->pages[i]);
+		page_print(&e->pages[i]);
 	}
 
 	if(readbyte(r) != '\x70')
 		printf("unexpected page list terminator: \\x%x\n", r->buf[0]);
-
-	return e;
 }
 
 void
 event_free(Event *e)
 {
+	for(int i = 0; i < e->npage; i++)
+		page_free(e->pages + i);
 	free(e->pages);
 	free(e->name);
-	free(e);
 }

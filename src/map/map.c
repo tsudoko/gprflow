@@ -7,6 +7,7 @@
 
 #include "util.h"
 #include "../reader.h"
+#include "../route.h"
 #include "../command.h"
 #include "page.h"
 #include "event.h"
@@ -38,19 +39,22 @@ map_load(char *filename)
 	m->tileset = readint(r);
 	m->w = readint(r);
 	m->h = readint(r);
-	m->nevent = readint(r);
+	m->nev = readint(r);
 
 	m->tiles = malloc(m->w*m->h*3*sizeof (int));
 	for(int i = 0; i < m->w*m->h*3; i++)
 		m->tiles[i] = readint(r);
 
-	while(readbyte(r) == '\x6f') {
-		Event *e = event_load(r);
+	m->evs = malloc(sizeof *m->evs * m->nev);
+	for(int i = 0; i < m->nev; i++) {
+		assert(readbyte(r) == '\x6f');
+		event_load(r, m->evs + i);
+		Event *e = m->evs + i;
 		printf("event \"%s\" (0x%x)\n", e->name, e->id);
 		printf("(%d, %d), %d pages\n", e->x, e->y, e->npage);
 	}
 
-	if(r->buf[0] != '\x66')
+	if(readbyte(r) != '\x66')
 		printf("unexpected event list terminator: \\x%x\n", r->buf[0]);
 
 	fclose(f);
@@ -61,6 +65,10 @@ map_load(char *filename)
 void
 map_free(Map *m)
 {
+	for(int i = 0; i < m->nev; i++)
+		event_free(m->evs + i);
+
+	free(m->evs);
 	free(m->tiles);
 	free(m);
 }
@@ -69,5 +77,5 @@ void
 map_print(Map *m)
 {
 	printf("tileset: %d\n", m->tileset);
-	printf("%d×%d, %d events\n", m->w, m->h, m->nevent);
+	printf("%d×%d, %d events\n", m->w, m->h, m->nev);
 }

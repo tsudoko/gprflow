@@ -4,15 +4,13 @@ typedef enum {
 	EV_BLANK,
 } Evid;
 
-typedef struct _event {
+typedef struct {
 	int id;
-	unsigned char *name; /* looks like sjis */
+	unsigned char *name;
 	int x, y;
 	int npage;
 	Page *pages;
-
-	struct _event *next;
 } Event;
 
-Event *event_load(Reader *r);
+void event_load(Reader *r, Event *);
 void event_free(Event *e);

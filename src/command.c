@@ -11,6 +11,9 @@
 void
 command_load(Reader *r, Command *c)
 {
+	c->movedata.nroute = 0;
+	c->movedata.routes = NULL;
+
 	c->narg = readbyte(r) - 1;
 	c->id = readint(r);
 
@@ -56,7 +59,8 @@ command_free(Command *c)
 	free(c->strargs);
 	for(int j = 0; j < c->movedata.nroute; j++)
 		free(c->movedata.routes[j].args);
-	free(c->movedata.routes);
+	if(c->movedata.routes)
+		free(c->movedata.routes);
 }
 
 void

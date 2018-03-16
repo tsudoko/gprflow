@@ -67,7 +67,6 @@ page_free(Page *p)
 		free(p->routes[i].args);
 	free(p->routes);
 	free(p->name);
-	free(p);
 }
 
 void
