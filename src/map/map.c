@@ -7,6 +7,7 @@
 
 #include "util.h"
 #include "../reader.h"
+#include "../command.h"
 #include "page.h"
 #include "event.h"
 #include "../map.h"

@@ -6,6 +6,8 @@ OFILES = src/main.o \
 	src/map/map.o \
 	src/map/event.o \
 	src/map/page.o \
+	src/command.o \
+	src/route.o \
 	src/database.o
 
 $(TARG): $(OFILES)

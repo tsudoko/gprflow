@@ -1,25 +1,4 @@
-/* this header file depends on reader.h */
-
-typedef struct {
-	unsigned char id;
-	int *args;
-} Route;
-
-typedef struct {
-	unsigned char narg;
-	int id;
-	unsigned char *args;
-	unsigned char nstrarg;
-	unsigned char **strargs;
-
-	/* FIXME: move out or make optional, it's not used in most commands */
-	struct {
-		unsigned char something[5];
-		unsigned char flags;
-		int nroute;
-		Route *routes;
-	} movedata;
-} Command;
+/* this header file depends on reader.h and command.h */
 
 typedef struct {
 	int id;
