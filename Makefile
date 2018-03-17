@@ -8,6 +8,7 @@ OFILES = src/main.o \
 	src/map/page.o \
 	src/command.o \
 	src/route.o \
+	src/commonevent.o \
 	src/database.o
 
 $(TARG): $(OFILES)

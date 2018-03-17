@@ -1,18 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "database.h"
+#define _POSIX_SOURCE
+#include <iconv.h>
+
+#include "reader.h"
+#include "route.h"
+#include "command.h"
+#include "commonevent.h"
 
 int
 main(int argc, char **argv)
 {
-	if(argc < 3) {
-		fprintf(stderr, "usage: %s projectfile datfile\n", argv[0]);
+	if(argc < 2) {
+		fprintf(stderr, "usage: %s CommonEvent.dat\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
-	Database *d = database_load(argv[1], argv[2]);
-	database_print(d);
-	database_free(d);
+	CommonEvents *c = cev_load(argv[1]);
+	cev_print(c);
+	cev_free(c);
 	return 0;
 }
