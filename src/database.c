@@ -11,29 +11,8 @@ static const int OFFINT = 0x3e8;
 static const int OFFSTR = 0x7d0;
 static const unsigned char DATMAGIC[] = "W\0\0OL\0FM\0\xc1";
 
-const char *
-field_typestr(Field *f)
-{
-	switch(f->type) {
-	case FieldRegular:   return "Regular"; break;
-	case FieldFilename:  return "Filename"; break;
-	case FieldReference: return "Reference"; break;
-	case FieldEnum:      return "Enum"; break;
-	default:             return "???";
-	}
-}
-
-const char *
-field_refdeststr(Field *f)
-{
-	switch(f->args[0]) {
-	case RefSysDatabase: return "SysDatabase"; break;
-	case RefDataBase:    return "DataBase"; break;
-	case RefCDataBase:   return "CDataBase"; break;
-	case RefCommonEvent: return "CommonEvent"; break;
-	default:             return "???";
-	}
-}
+const char *field_typestr(Field *f);
+const char *field_refdeststr(Field *f);
 
 void
 type_countvalues(Type *t, int *nint, int *nstr)

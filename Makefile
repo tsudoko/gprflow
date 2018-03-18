@@ -9,10 +9,18 @@ OFILES = src/main.o \
 	src/command.o \
 	src/route.o \
 	src/commonevent.o \
+	src/enumstr.o \
 	src/database.o
+
+# incomplete for now
+HFILES = src/database.h \
+	src/command.h
 
 $(TARG): $(OFILES)
 	$(CC) $(CFLAGS) -o $@ $(OFILES)
+
+src/enumstr.c: gen/enumstr.awk $(HFILES)
+	awk -f gen/enumstr.awk $(HFILES) > $@
 
 src/sjistab.c: res/SHIFTJIS.TXT res/sjistabgen.awk
 	awk -f res/sjistabgen.awk $< > $@
