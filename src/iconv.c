@@ -9,7 +9,7 @@
 /* iconv.c - iconv-compatible SJIS→UTF-8 converter */
 
 typedef unsigned long Rune;
-#include "sjistab.c"
+#include "_iconv.c"
 
 enum {
 	EncSJIS,

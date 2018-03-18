@@ -7,19 +7,11 @@
 # 		OtherValue,
 # 	};
 
-BEGIN {
-	print "#include <stdio.h>"
-	print "#define _POSIX_SOURCE"
-	print "#include <iconv.h>"
-	print "#include \"reader.h\""
-	print "#include \"route.h\""
-}
-
 lastf != FILENAME {
 	lastf = FILENAME
 	f = FILENAME
 	sub("^src/", "", f)
-	print "#include \""f"\""
+	print "#include \""f"\"\n"
 	init = 1
 }
 
@@ -33,7 +25,7 @@ $1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $7 == "*/" {
 /}/ && inside {
 	inside = 0;
 	print "	default: return \"???\";"
-	print "	}\n}"
+	print "	}\n}\n"
 }
 
 inside && NF {

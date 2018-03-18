@@ -19,11 +19,11 @@ HFILES = src/database.h \
 $(TARG): $(OFILES)
 	$(CC) $(CFLAGS) -o $@ $(OFILES)
 
-src/enumstr.c: gen/enumstr.awk $(HFILES)
+src/_enumstr.c: gen/enumstr.awk $(HFILES)
 	awk -f gen/enumstr.awk $(HFILES) > $@
 
-src/sjistab.c: gen/sjistab.awk res/SHIFTJIS.TXT
-	awk -f gen/sjistab.awk res/SHIFTJIS.TXT > $@
+src/_iconv.c: gen/iconv.awk res/SHIFTJIS.TXT
+	awk -f gen/iconv.awk res/SHIFTJIS.TXT > $@
 
 clean:
 	rm -f $(TARG) $(OFILES) src/sjistab.c
