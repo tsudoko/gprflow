@@ -19,6 +19,14 @@ main(int argc, char **argv)
 
 	CommonEvents *c = cev_load(argv[1]);
 	cev_print(c);
+	for(int i = 0; i < c->n; i++) {
+		printf("event %d\n", i);
+		for(int j = 0; j < c->e[i].ncmd; j++) {
+			printf("line %3d: ", j);
+			Command *cmd = &c->e[i].cmds[j];
+			command_print(cmd);
+		}
+	}
 	cev_free(c);
 	return 0;
 }
