@@ -73,6 +73,8 @@ type_loadproject(Reader *r, Type *t)
 		f->args = malloc(sizeof *f->args * f->narg);
 		for(int j = 0; j < f->narg; j++)
 			f->args[j] = readint(r);
+		if(f->type == FieldFilename && f->narg == 1)
+			assert(f->args[0] == 0);
 	}
 
 	n = readint(r);
@@ -145,6 +147,8 @@ type_print(Type *t)
 		printf("  - %s: %s<%s>[%d]", t->fields[f].name, field_typestr(&t->fields[f]), (t->fields[f].offset >= OFFSTR ? "str" : "int"), t->fields[f].narg);
 
 
+		if(t->fields[f].type == FieldFilename)
+			printf("\targ: %d", t->fields[f].args[0]);
 		if(t->fields[f].type == FieldReference)
 			printf("\t-> %s[%d]", field_refdeststr(&t->fields[f]), t->fields[f].args[1]);
 		printf("\n");
