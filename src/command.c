@@ -8,6 +8,8 @@
 #include "route.h"
 #include "command.h"
 
+const char *command_idstr(Command *);
+
 void
 command_load(Reader *r, Command *c)
 {
@@ -66,7 +68,7 @@ command_free(Command *c)
 void
 command_print(Command *c)
 {
-	printf("%x\n", c->id);
+	printf("%d: %s\n", c->id, command_idstr(c));
 	printf("narg %d\n", c->narg);
 	printf("  args: [");
 	for(int j = 0; j < c->narg; j++) {
