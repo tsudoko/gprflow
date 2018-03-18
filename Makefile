@@ -22,8 +22,8 @@ $(TARG): $(OFILES)
 src/enumstr.c: gen/enumstr.awk $(HFILES)
 	awk -f gen/enumstr.awk $(HFILES) > $@
 
-src/sjistab.c: res/SHIFTJIS.TXT res/sjistabgen.awk
-	awk -f res/sjistabgen.awk $< > $@
+src/sjistab.c: gen/sjistab.awk res/SHIFTJIS.TXT
+	awk -f gen/sjistab.awk res/SHIFTJIS.TXT > $@
 
 clean:
 	rm -f $(TARG) $(OFILES) src/sjistab.c
