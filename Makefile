@@ -19,6 +19,9 @@ HFILES = src/database.h \
 $(TARG): $(OFILES)
 	$(CC) $(CFLAGS) -o $@ $(OFILES)
 
+src/enumstr.c: src/_enumstr.c
+src/iconv.c: src/_iconv.c
+
 src/_enumstr.c: gen/enumstr.awk $(HFILES)
 	awk -f gen/enumstr.awk $(HFILES) > $@
 
