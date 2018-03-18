@@ -37,6 +37,7 @@ $1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $7 == "*/" {
 }
 
 inside && NF {
+	sub(/=.*/, "", $1)
 	sub(/,$/, "", $1)
 	print "	case "$1": return \""$1"\"; break;"
 }
