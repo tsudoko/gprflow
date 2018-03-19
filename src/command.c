@@ -68,15 +68,14 @@ command_free(Command *c)
 void
 command_print(Command *c)
 {
-	printf("%d: %s\n", c->id, command_idstr(c));
-	printf("narg %d\n", c->narg);
-	printf("  args: [");
+	printf("%s (%d)", command_idstr(c), c->id);
+	printf(" [");
 	for(int j = 0; j < c->narg; j++) {
 		printf("%d", c->args[j]);
 		if(j + 1 != c->narg) printf(", ");
 	}
-	printf("]\n");
-	printf("  string args: [");
+	printf("]");
+	printf(" [");
 	for(int j = 0; j < c->nstrarg; j++) {
 		printf("\"%s\"", c->strargs[j]);
 		if(j + 1 != c->nstrarg) printf(", ");
