@@ -3,7 +3,7 @@
 typedef struct {
 	unsigned char narg;
 	int id;
-	unsigned char *args;
+	int *args;
 	unsigned char nstrarg;
 	unsigned char **strargs;
 
