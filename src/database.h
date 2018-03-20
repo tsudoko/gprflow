@@ -33,14 +33,14 @@ typedef struct {
 	Type *t;
 } Database;
 
-enum field_type /* enumstr: Field type */ {
+enum field_type /* enumstr: Field type Field */ {
 	FieldRegular,
 	FieldFilename,
 	FieldReference,
 	FieldEnum,
 };
 
-enum field_refdest /* enumstr: Field args[0] */ {
+enum field_refdest /* enumstr: Field args[0] Ref */ {
 	RefSysDatabase, /* システムデータベース */
 	RefDataBase,    /* ユーザーデータベース */
 	RefCDataBase,   /* 可変データベース */

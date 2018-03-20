@@ -16,7 +16,7 @@ typedef struct {
 	} movedata;
 } Command;
 
-enum command_id /* enumstr: Command id */ {
+enum command_id /* enumstr: Command id Cmd */ {
 	CmdNop          = 0,
 	CmdCheckpoint   = 99,
 	CmdMsg          = 101,

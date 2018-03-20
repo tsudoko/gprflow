@@ -15,15 +15,16 @@ lastf != FILENAME {
 	init = 1
 }
 
-$1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $7 == "*/" {
+$1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $8 == "*/" {
 	inside = 1
+	prefix = $7
 	print "const char *\n" $2 "str("$5" *v)\n{"
 	print "	switch(v->"$6") {"
 	next
 }
 
 /}/ && inside {
-	inside = 0;
+	inside = 0
 	print "	default: return \"???\";"
 	print "	}\n}\n"
 }
@@ -31,5 +32,7 @@ $1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $7 == "*/" {
 inside && NF {
 	sub(/=.*/, "", $1)
 	sub(/,$/, "", $1)
-	print "	case "$1": return \""$1"\"; break;"
+	printf "	case "$1": "
+	sub("^"prefix, "", $1)
+	print "return \""$1"\"; break;"
 }
