@@ -4,6 +4,7 @@ typedef struct {
 	unsigned char narg;
 	int id;
 	int *args;
+	unsigned char indent;
 	unsigned char nstrarg;
 	unsigned char **strargs;
 

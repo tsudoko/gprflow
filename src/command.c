@@ -24,7 +24,7 @@ command_load(Reader *r, Command *c)
 		c->args[j] = readint(r);
 	}
 
-	rloadn(r, 1); /* indent */
+	c->indent = readbyte(r);
 
 	c->nstrarg = readbyte(r);
 	c->strargs = malloc(sizeof *c->strargs * c->nstrarg);
@@ -68,6 +68,8 @@ command_free(Command *c)
 void
 command_print(Command *c)
 {
+	for(int i = 0; i < c->indent; i++)
+		printf("    ");
 	printf("%s (%d)", command_idstr(c), c->id);
 	printf(" [");
 	for(int j = 0; j < c->narg; j++) {
