@@ -84,3 +84,16 @@ command_print(Command *c)
 	}
 	printf("]\n");
 }
+
+void
+command_printw(Command *c)
+{
+	/* TODO: what is <%d>? */
+	printf("[%d][%d,%d]<%d>(", c->id, c->narg, c->nstrarg, 0);
+	for(int i = 0; i < c->narg; i++)
+		printf("%d%s", c->args[i], (i+1 == c->narg ? "" : ","));
+	printf(")(");
+	for(int i = 0; i < c->nstrarg; i++)
+		printf("\"%s\"%s", c->strargs[i], (i+1 == c->nstrarg ? "" : ","));
+	printf(")\n");
+}
