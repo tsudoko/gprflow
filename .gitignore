@@ -1,6 +1,7 @@
 # compiler output
 [a012568kqv].out
 *.[o012568kqv]
+*.a
 
 # generated code
 _*.c
