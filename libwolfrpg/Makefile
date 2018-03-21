@@ -1,8 +1,7 @@
 .PHONY: clean
 
 TARG = a.out
-OFILES = src/main.o \
-	src/reader.o \
+OFILES = src/reader.o \
 	src/map/map.o \
 	src/map/event.o \
 	src/map/page.o \
@@ -20,13 +19,8 @@ $(TARG): $(OFILES)
 	$(CC) $(CFLAGS) -o $@ $(OFILES)
 
 src/enumstr.c: src/_enumstr.c
-src/iconv.c: src/_iconv.c
-
 src/_enumstr.c: gen/enumstr.awk $(HFILES)
 	awk -f gen/enumstr.awk $(HFILES) > $@
 
-src/_iconv.c: gen/iconv.awk res/SHIFTJIS.TXT
-	awk -f gen/iconv.awk res/SHIFTJIS.TXT > $@
-
 clean:
-	rm -f $(TARG) $(OFILES) src/sjistab.c
+	rm -f $(TARG) $(OFILES) src/_enumstr.c
