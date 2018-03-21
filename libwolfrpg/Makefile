@@ -1,6 +1,6 @@
 .PHONY: clean
 
-TARG = a.out
+TARG = libwolfrpg.a
 OFILES = src/reader.o \
 	src/map/map.o \
 	src/map/event.o \
@@ -16,7 +16,7 @@ HFILES = src/database.h \
 	src/command.h
 
 $(TARG): $(OFILES)
-	$(CC) $(CFLAGS) -o $@ $(OFILES)
+	ar cr $@ $(OFILES)
 
 src/enumstr.c: src/_enumstr.c
 src/_enumstr.c: gen/enumstr.awk $(HFILES)
