@@ -163,7 +163,7 @@ event_print(Event *e)
 CommonEvents *
 cev_load(char *path)
 {
-	Reader *r = rnew("SHIFT_JIS");
+	Reader *r = rnew("CP932");
 	CommonEvents *c = malloc(sizeof *c);
 	unsigned char b;
 	r->f = fopen(path, "rb");

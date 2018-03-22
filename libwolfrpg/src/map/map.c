@@ -25,7 +25,7 @@ static const unsigned char MAGICLEN = 34; /* XXX */
 Map *
 map_load(char *filename)
 {
-	Reader *r = rnew("SHIFT_JIS");
+	Reader *r = rnew("CP932");
 	FILE *f = fopen(filename, "rb");
 	Map *m = malloc(sizeof *m);
 

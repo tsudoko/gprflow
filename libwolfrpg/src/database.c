@@ -168,7 +168,7 @@ type_print(Type *t)
 Database *
 database_load(char *projectpath, char *datpath)
 {
-	Reader *r = rnew("SHIFT_JIS");
+	Reader *r = rnew("CP932");
 	Database *d = malloc(sizeof *d);
 
 	r->f = fopen(projectpath, "rb");
