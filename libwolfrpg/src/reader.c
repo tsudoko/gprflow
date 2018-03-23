@@ -118,8 +118,22 @@ readstriconv(Reader *r)
 			out = new;
 			op = out + (outlen-outleft);
 		} else if(errno != EINVAL) {
-			/* FIXME: reader.c shouldn't output anything directly */
-			perror("iconv: unexpected error");
+			size_t err1len = strlen("...decoding error: "),
+			       err2len = strlen(strerror(errno)),
+			       errlen = err1len + err2len - 1;
+			if(outleft < errlen) {
+				outlen += errlen;
+				outleft += errlen;
+				char *new = realloc(out, outlen);
+				assert(new != NULL);
+				out = new;
+				op = out + (outlen-outleft);
+			}
+			strcpy(op, "...decoding error: ");
+			op += err1len;
+			strcpy(op, strerror(errno));
+			op += err2len + 1;
+			break;
 		}
 	}
 	assert(op[-1] == '\0');
