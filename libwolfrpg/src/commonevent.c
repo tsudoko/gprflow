@@ -184,7 +184,7 @@ event_print(Event *e)
 	printf("]\n");
 	printf("     9 %s\n", e->unknown9);
 	printf("    10 %s\n", e->unknown10);
-	printf("    12 %d\n", e->unknown10);
+	printf("    12 %d\n", e->unknown12);
 }
 
 CommonEvents *
