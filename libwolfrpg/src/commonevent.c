@@ -152,7 +152,7 @@ event_print(Event *e)
 	printf("    11 %s\n", e->unknown11);
 	printf("     3 [");
 	for(int i = 0; i < nelem(e->unknown3); i++)
-		printf("\"%s\" ", e->unknown3[i]);
+		printf("\"%s\"%s", e->unknown3[i], (i != nelem(e->unknown3)-1 ? ", " : ""));
 	printf("]\n");
 	printf("     4 ");
 	for(int i = 0; i < sizeof e->unknown4; i++)
@@ -160,18 +160,20 @@ event_print(Event *e)
 	printf("\n");
 	printf("     5 [");
 	for(int i = 0; i < nelem(e->unknown5); i++) {
+		struct _ev_u5 *u = e->unknown5 + i;
 		printf("[");
-		for(int j = 0; j < e->unknown5[i].n; j++)
-			printf("\"%s\" ", e->unknown5[i].v[j]);
-		printf("] ");
+		for(int j = 0; j < u->n; j++)
+			printf("\"%s\"%s", u->v[j], (j != u->n-1 ? ", " : ""));
+		printf("]%s", (i < nelem(e->unknown5)-1 ? ", " : ""));
 	}
 	printf("]\n");
 	printf("     6 [");
 	for(int i = 0; i < nelem(e->unknown6); i++) {
+		struct _ev_u6 *u = e->unknown6 + i;
 		printf("[");
-		for(int j = 0; j < e->unknown6[i].n; j++)
-			printf("%d ", e->unknown6[i].v[j]);
-		printf("] ");
+		for(int j = 0; j < u->n; j++)
+			printf("%d%s", u->v[j], (j != u->n-1 ? ", " : ""));
+		printf("]%s", (i < nelem(e->unknown5)-1 ? ", " : ""));
 	}
 	printf("]\n");
 	printf("     7 ");
@@ -180,7 +182,7 @@ event_print(Event *e)
 	printf("\n");
 	printf("     8 [");
 	for(int i = 0; i < nelem(e->unknown8); i++)
-		printf("\"%s\" ", e->unknown8[i]);
+		printf("\"%s\"%s", e->unknown8[i], (i != nelem(e->unknown8)-1 ? ", " : ""));
 	printf("]\n");
 	printf("     9 %s\n", e->unknown9);
 	printf("    10 %s\n", e->unknown10);
