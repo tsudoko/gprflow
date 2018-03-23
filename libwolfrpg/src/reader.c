@@ -103,6 +103,7 @@ readstriconv(Reader *r)
 		ip = in;
 		int iow = iconv(r->iconv, &ip, &inleft, &op, &outleft);
 		totalleft -= ip-in;
+		int ierr = errno;
 
 		if(in != ip && inleft)
 			memmove(in, ip, inleft);
@@ -110,16 +111,16 @@ readstriconv(Reader *r)
 		if(iow != (size_t)-1)
 			continue;
 
-		if(errno == E2BIG) {
+		if(ierr == E2BIG) {
 			outlen += BUFLEN;
 			outleft += BUFLEN;
 			char *new = realloc(out, outlen);
 			assert(new != NULL);
 			out = new;
 			op = out + (outlen-outleft);
-		} else if(errno != EINVAL) {
+		} else if(ierr != EINVAL) {
 			size_t err1len = strlen("...decoding error: "),
-			       err2len = strlen(strerror(errno)),
+			       err2len = strlen(strerror(ierr)),
 			       errlen = err1len + err2len - 1;
 			if(outleft < errlen) {
 				outlen += errlen;
@@ -131,7 +132,7 @@ readstriconv(Reader *r)
 			}
 			strcpy(op, "...decoding error: ");
 			op += err1len;
-			strcpy(op, strerror(errno));
+			strcpy(op, strerror(ierr));
 			op += err2len + 1;
 			break;
 		}
