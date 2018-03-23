@@ -19,6 +19,8 @@ static int
 event_load(Reader *r, Event *e)
 {
 	unsigned char b;
+	e->unknown10 = NULL;
+	e->unknown12 = 0;
 	if((b = readbyte(r)) != 0x8e) {
 		printf("unexpected event header: 0x%x\n", b);
 		return -1;
@@ -111,6 +113,31 @@ event_load(Reader *r, Event *e)
 }
 
 static void
+event_free(Event *e)
+{
+	free(e->name);
+	for(int i = 0; i < e->ncmd; i++)
+		command_free(e->cmds + i);
+	free(e->cmds);
+	free(e->unknown11);
+	free(e->desc);
+	for(int i = 0; i < nelem(e->unknown3); i++)
+		free(e->unknown3[i]);
+	for(int i = 0; i < nelem(e->unknown5); i++) {
+		for(int j = 0; j < e->unknown5[i].n; j++)
+			free(e->unknown5[i].v[j]);
+		free(e->unknown5[i].v);
+	}
+	for(int i = 0; i < nelem(e->unknown6); i++)
+		free(e->unknown6[i].v);
+	for(int i = 0; i < nelem(e->unknown8); i++)
+		free(e->unknown8[i]);
+	free(e->unknown9);
+	if(e->unknown10 != NULL)
+		free(e->unknown10);
+}
+
+static void
 event_print(Event *e)
 {
 	printf("%s (%x)\n", e->name, e->id);
@@ -192,6 +219,8 @@ cev_load(char *path)
 void
 cev_free(CommonEvents *c)
 {
+	for(int i = 0; i < c->n; i++)
+		event_free(c->e + i);
 	free(c->e);
 	free(c);
 }
