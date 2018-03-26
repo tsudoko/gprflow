@@ -79,7 +79,45 @@ enum command_id /* enumstr: Command id Cmd */ {
 	CmdLoopEnd      = 498,
 	CmdBranchEnd    = 499,
 };
-	
+
+enum {
+	CfCmpGt,
+	CfCmpGe,
+	CfCmpEq,
+	CfCmpLe,
+	CfCmpLt,
+	CfCmpNe,
+	CfCmpBit,
+};
+
+enum command_flag {
+	CfClamp      = 1<<0,
+	CfRealCalc   = 1<<1,
+	CfLeftInt    = 1<<2,
+	CfRightInt   = 1<<3,
+	CfDeref      = 1<<4,
+	CfLeftDeref  = 1<<5,
+	CfRightDeref = 1<<6,
+
+	CfAsEqu = 0x0000, /* v = op(a, b) */
+	CfAsAdd = 0x0100, /* v += op(a, b) */
+	CfAsSub = 0x0200, /* v -= op(a, b) */
+	CfAsMul = 0x0300, /* v *= op(a, b) */
+	CfAsDiv = 0x0400, /* v /= op(a, b) */
+	CfAsMod = 0x0500, /* v %= op(a, b) */
+	CfAsMax = 0x0600, /* v = max(l, op(a, b)) */
+	CfAsMin = 0x0700, /* v = min(l, op(a, b)) */
+	CfAsAbs = 0x0800, /* v = abs(op(a, b)) */
+
+	CfOpAdd = 0x0000, /* op(a, b) { return a + b } */
+	CfOpSub = 0x1000, /* op(a, b) { return a - b } */
+	CfOpMul = 0x2000, /* op(a, b) { return a * b } */
+	CfOpDiv = 0x3000, /* op(a, b) { return a / b } */
+	CfOpMod = 0x4000, /* op(a, b) { return a % b } */
+	CfOpAnd = 0x5000, /* op(a, b) { return a & b } */
+	CfOpNot = 0x6000, /* op(a, b) { return a ~ b } */
+};
+
 void command_load(Reader *r, Command *c);
 void command_free(Command *c);
 void command_print(Command *c);
