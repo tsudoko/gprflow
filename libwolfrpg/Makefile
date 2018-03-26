@@ -2,9 +2,7 @@
 
 TARG = libwolfrpg.a
 OFILES = src/reader.o \
-	src/map/map.o \
-	src/map/event.o \
-	src/map/page.o \
+	src/map.o \
 	src/command.o \
 	src/route.o \
 	src/commonevent.o \

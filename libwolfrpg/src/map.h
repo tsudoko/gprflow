@@ -1,3 +1,38 @@
+/* this header file depends on reader.h and command.h */
+
+typedef struct {
+	int id;
+	int something;
+
+	unsigned char *name;
+	unsigned char direction;
+	unsigned char frame;
+	unsigned char opacity;
+	unsigned char rendermode;
+
+	unsigned char conditions[1 + 4 + 4*4 + 4*4];
+	unsigned char movement[4];
+
+	unsigned char flags;
+	unsigned char routeflags;
+
+	int nroute;
+	Route *routes;
+	int ncmd;
+	Command *cmds;
+
+	unsigned char shadow;
+	unsigned char colw, colh;
+} Page;
+
+typedef struct {
+	int id;
+	unsigned char *name;
+	int x, y;
+	int npage;
+	Page *pages;
+} MapEvent;
+
 typedef struct {
 	unsigned int tileset;
 
@@ -6,7 +41,7 @@ typedef struct {
 
 	unsigned int *tiles; /* w*h*3 */
 
-	Event *evs;
+	MapEvent *evs;
 } Map;
 
 Map *map_load(char *filename);
