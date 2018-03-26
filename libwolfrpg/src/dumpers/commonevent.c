@@ -4,10 +4,10 @@
 #define _POSIX_SOURCE
 #include <iconv.h>
 
-#include "libwolfrpg/src/reader.h"
-#include "libwolfrpg/src/route.h"
-#include "libwolfrpg/src/command.h"
-#include "libwolfrpg/src/commonevent.h"
+#include "../reader.h"
+#include "../route.h"
+#include "../command.h"
+#include "../commonevent.h"
 
 int
 main(int argc, char **argv)
