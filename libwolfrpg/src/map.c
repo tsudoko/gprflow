@@ -22,7 +22,6 @@ static const unsigned char MAPMAGIC[] = \
 	"\0\0\0\0\x64"
 	"\0\0\0\x65\x05"
 	"\0\0\0\x82\xc8\x82\xb5\0";
-static const unsigned char MAGICLEN = 34; /* XXX */
 
 void
 page_load(Reader *r, Page *p)
@@ -159,7 +158,7 @@ map_load(char *filename)
 
 	r->f = f;
 
-	if(readncmp(r, MAPMAGIC, MAGICLEN) != 0) {
+	if(readncmp(r, MAPMAGIC, sizeof MAPMAGIC-1) != 0) {
 		printf("%x %x %x %x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
 		return NULL;
 	}
