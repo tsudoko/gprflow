@@ -4,8 +4,8 @@
 
 #include <iconv.h>
 
+#include "wolfrpg.h"
 #include "reader.h"
-#include "database.h"
 
 static const int OFFINT = 0x3e8;
 static const int OFFSTR = 0x7d0;

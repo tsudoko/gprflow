@@ -7,14 +7,6 @@
 # 		OtherValue,
 # 	};
 
-lastf != FILENAME {
-	lastf = FILENAME
-	f = FILENAME
-	sub("^src/", "", f)
-	print "#include \""f"\"\n"
-	init = 1
-}
-
 $1 == "enum" && $3 == "/*" && $4 == "enumstr:" && $8 == "*/" {
 	inside = 1
 	prefix = $7

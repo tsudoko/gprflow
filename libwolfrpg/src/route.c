@@ -3,8 +3,8 @@
 
 #include <iconv.h>
 
+#include "wolfrpg.h"
 #include "reader.h"
-#include "route.h"
 
 static const unsigned char ROUTETERM[] = "\x01\x00";
 

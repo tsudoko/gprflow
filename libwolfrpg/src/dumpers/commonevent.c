@@ -1,13 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define _POSIX_SOURCE
-#include <iconv.h>
-
-#include "../reader.h"
-#include "../route.h"
-#include "../command.h"
-#include "../commonevent.h"
+#include "../wolfrpg.h"
 
 int
 main(int argc, char **argv)

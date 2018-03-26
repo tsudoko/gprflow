@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../database.h"
+#include "../wolfrpg.h"
 
 int
 main(int argc, char **argv)

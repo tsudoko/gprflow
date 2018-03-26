@@ -118,6 +118,5 @@ enum command_flag {
 	CfOpNot = 0x6000, /* op(a, b) { return a ~ b } */
 };
 
-void command_load(Reader *r, Command *c);
 void command_free(Command *c);
 void command_print(Command *c);

@@ -5,10 +5,9 @@
 #define _POSIX_SOURCE
 #include <iconv.h>
 
+#include "wolfrpg.h"
 #include "reader.h"
-#include "route.h"
-#include "command.h"
-#include "commonevent.h"
+#include "internal.h"
 
 #define nelem(x) (sizeof(x)/sizeof((x)[0]))
 

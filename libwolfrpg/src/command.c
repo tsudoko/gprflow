@@ -4,9 +4,9 @@
 
 #include <iconv.h>
 
+#include "wolfrpg.h"
 #include "reader.h"
-#include "route.h"
-#include "command.h"
+#include "internal.h"
 
 const char *command_idstr(Command *);
 

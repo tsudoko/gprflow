@@ -5,10 +5,9 @@
 
 #include <iconv.h>
 
+#include "wolfrpg.h"
 #include "reader.h"
-#include "route.h"
-#include "command.h"
-#include "map.h"
+#include "internal.h"
 
 static const unsigned char CMDTERM[] = "\x03\x00\x00\x00";
 
