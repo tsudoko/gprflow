@@ -48,5 +48,7 @@ enum field_refdest /* enumstr: Field args[0] Ref */ {
 };
 
 Database *database_load(char *, char *);
+unsigned char *database_igetstr(Database *, int, int, int);
+int database_igetint(Database *, int, int, int);
 void database_print(Database *);
 void database_free(Database *);
