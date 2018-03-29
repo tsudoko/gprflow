@@ -9,5 +9,10 @@ int
 main(void)
 {
 	Game *g = game_init(".");
+	if(g == NULL) {
+		fprintf(stderr, "init failed\n");
+		return EXIT_FAILURE;
+	}
 
+	return EXIT_SUCCESS;
 }
