@@ -39,11 +39,9 @@ page_load(Reader *r, Page *p)
 	p->routeflags = readbyte(r);
 
 	p->nroute = readint(r);
-	printf("(parsing) %d routes\n", p->nroute);
 
 	p->routes = malloc(sizeof *p->routes * p->nroute);
 	for(int i = 0; i < p->nroute; i++) {
-		printf("(parsing) parsing route %d\n", i);
 		if(route_load(r, &p->routes[i]) < 0) { /* TODO: make fatal? */
 			p->nroute = i;
 			break;
@@ -132,7 +130,6 @@ event_load(Reader *r, MapEvent *e)
 			break;
 		}
 		page_load(r, &e->pages[i]);
-		page_print(&e->pages[i]);
 	}
 
 	if(readbyte(r) != '\x70')
@@ -178,8 +175,6 @@ map_load(char *filename)
 		assert(readbyte(r) == '\x6f');
 		event_load(r, m->evs + i);
 		MapEvent *e = m->evs + i;
-		printf("event \"%s\" (0x%x)\n", e->name, e->id);
-		printf("(%d, %d), %d pages\n", e->x, e->y, e->npage);
 	}
 
 	if(readbyte(r) != '\x66')
