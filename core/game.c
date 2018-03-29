@@ -78,7 +78,6 @@ Game *
 game_init(char *basepath)
 {
 	Game *g = game_load(basepath);
-	char p[Pathmax];
 	if(g == NULL)
 		return NULL;
 
