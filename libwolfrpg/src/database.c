@@ -138,14 +138,14 @@ type_free(Type *t)
 }
 
 unsigned char *
-type_igetstr(Type *t, int f, int i)
+type_igetstr(Type *t, int i, int f)
 {
 	assert(t->fields[f].offset >= OFFSTR);
 	return t->data[i].strs[t->fields[f].offset - OFFSTR];
 }
 
 int
-type_igetint(Type *t, int f, int i)
+type_igetint(Type *t, int i, int f)
 {
 	assert(t->fields[f].offset < OFFSTR);
 	return t->data[i].ints[t->fields[f].offset - OFFINT];
@@ -172,9 +172,9 @@ type_print(Type *t)
 		for(int f = 0; f < t->nfield; f++) {
 			printf("    %s: ", t->fields[f].name);
 			if(t->fields[f].offset >= OFFSTR)
-				printf("%s\n", type_igetstr(t, f, i));
+				printf("%s\n", type_igetstr(t, i, f));
 			else
-				printf("%d\n", type_igetint(t, f, i));
+				printf("%d\n", type_igetint(t, i, f));
 		}
 	}
 }
