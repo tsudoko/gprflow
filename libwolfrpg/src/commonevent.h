@@ -34,3 +34,6 @@ typedef struct {
 CommonEvents *cev_load(char *);
 void cev_free(CommonEvents *);
 void cev_print(CommonEvents *);
+#define commonevent_load cev_load
+#define commonevent_free cev_free
+#define commonevent_print cev_print
