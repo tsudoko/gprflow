@@ -180,15 +180,15 @@ type_print(Type *t)
 }
 
 unsigned char *
-database_igetstr(Database *d, int t, int f, int i)
+database_igetstr(Database *d, int t, int i, int f)
 {
-	return type_igetstr(d->t + t, f, i);
+	return type_igetstr(d->t + t, i, f);
 }
 
 int
-database_igetint(Database *d, int t, int f, int i)
+database_igetint(Database *d, int t, int i, int f)
 {
-	return type_igetint(d->t + t, f, i);
+	return type_igetint(d->t + t, i, f);
 }
 
 Database *
