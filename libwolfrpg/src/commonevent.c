@@ -195,6 +195,8 @@ cev_load(char *path)
 	CommonEvents *c = malloc(sizeof *c);
 	unsigned char b;
 	r->f = fopen(path, "rb");
+	if(r->f == NULL)
+		return NULL;
 
 	if(readncmp(r, CEVMAGIC, sizeof CEVMAGIC-1) != 0) {
 		printf("unexpected common event magic\n");

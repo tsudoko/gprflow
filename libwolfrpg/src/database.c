@@ -198,6 +198,9 @@ database_load(char *projectpath, char *datpath)
 	Database *d = malloc(sizeof *d);
 
 	r->f = fopen(projectpath, "rb");
+	if(r->f == NULL)
+		return NULL;
+
 	d->n = readint(r);
 	d->t = malloc(sizeof *d->t * d->n);
 	for(int i = 0; i < d->n; i++)
@@ -207,6 +210,9 @@ database_load(char *projectpath, char *datpath)
 	printf("にゃーん\n");
 
 	r->f = fopen(datpath, "rb");
+	if(r->f == NULL)
+		return NULL;
+
 	assert(readbyte(r) == 0); /* encrypted if !0 */
 	if(readncmp(r, DATMAGIC, sizeof DATMAGIC-1) != 0) {
 		printf("unexpected dat magic\n");

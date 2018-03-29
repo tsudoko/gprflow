@@ -156,6 +156,8 @@ map_load(char *filename)
 	Map *m = malloc(sizeof *m);
 
 	r->f = f;
+	if(r->f == NULL)
+		return NULL;
 
 	if(readncmp(r, MAPMAGIC, sizeof MAPMAGIC-1) != 0) {
 		printf("%x %x %x %x\n", r->buf[0], r->buf[1], r->buf[2], r->buf[3]);
