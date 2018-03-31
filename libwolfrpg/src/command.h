@@ -120,3 +120,4 @@ enum command_flag {
 
 void command_free(Command *c);
 void command_print(Command *c);
+const char *command_idstr(Command *c);

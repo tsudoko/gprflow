@@ -44,6 +44,7 @@ typedef struct {
 	MapEvent *evs;
 } Map;
 
+void page_print(Page *);
 Map *map_load(char *filename);
 void map_print(Map *m);
 void map_free(Map *m);

@@ -4,7 +4,7 @@
 
 #include <wolfrpg.h>
 
-#include "game.h"
+#include "core.h"
 
 #define Pathmax 4096
 
@@ -81,9 +81,45 @@ game_init(char *basepath)
 	if(g == NULL)
 		return NULL;
 
+	g->autoev.ncmd = 0;
+
 	if(game_mapload(g, database_igetint(g->db[RefSysDatabase], 7, 0, 0)) < 0)
 		return NULL;
 
 	/* TODO: execute 自動イベント from teh current map and common events */
 	return g;
+}
+
+int
+game_maptick(Game *g)
+{
+	if(g->autoev.ncmd != 0) {
+		switch(event_tick(g, &g->autoev)) {
+		case EvReturn:
+			return 0;
+		case EvRunning:
+			return 1;
+		default:
+			return -1;
+		}
+	}
+
+	/* TODO: auto/parallel common events */
+	for(int i = 0; i < g->map->nev; i++) {
+		MapEvent *e = g->map->evs + i;
+		for(int j = 0; j < e->npage; j++) {
+			Page *p = e->pages + j;
+			/* look for an automatic event (TODO parallel) */
+			#define PageEvAuto 1
+			if(p->conditions[0] != PageEvAuto)
+				continue;
+			#undef PageEvAuto
+
+			/* TODO: multiple auto events */
+			event_frompage(&g->autoev, p);
+			return 1;
+		}
+	}
+
+	return -1;
 }

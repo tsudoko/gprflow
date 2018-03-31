@@ -14,5 +14,6 @@ main(void)
 		return EXIT_FAILURE;
 	}
 
+	while(game_maptick(g) != 0);
 	return EXIT_SUCCESS;
 }
