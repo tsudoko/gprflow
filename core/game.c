@@ -88,6 +88,10 @@ game_init(char *basepath)
 
 	g->map = NULL;
 	g->autoev.ncmd = 0;
+	g->pc.x = database_igetint(g->db[RefSysDatabase], 7, 0, 1);
+	g->pc.y = database_igetint(g->db[RefSysDatabase], 7, 0, 2);
+	g->pc.px = g->pc.x*2;
+	g->pc.py = g->pc.y*2;
 
 	if(game_mapload(g, database_igetint(g->db[RefSysDatabase], 7, 0, 0)) < 0)
 		return NULL;
