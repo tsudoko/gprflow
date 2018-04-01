@@ -45,10 +45,11 @@ event_tick(struct game *g, struct event_state *s)
 		fmsg(g, c->strargs[0]);
 		break;
 	case CmdChoice: {
-		int r = fchoice(g, c->nstrarg, c->strargs, 3); /* FIXME: テキトー */
+		int r = fchoice(g, c->nstrarg, c->strargs, (c->args[0]&0xff)>>4, c->args[0]>>8);
+		int cid = r == 0 ? CmdCancelCase : (r >= 100 ? CmdSpecialChoiceCase : CmdChoiceCase);
 		/* XXX this might be slow for larger events, might want to move it to 1stpass */
 		for(int i = s->line; i < s->ncmd; i++) {
-			if(s->cmds[i].id == CmdChoiceCase &&
+			if(s->cmds[i].id == cid &&
 			   s->cmds[i].indent == c->indent &&
 			   s->cmds[i].narg >= 1 &&
 			   s->cmds[i].args[0] == r) {
