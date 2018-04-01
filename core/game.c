@@ -106,6 +106,7 @@ game_maptick(Game *g)
 	if(g->autoev.ncmd != 0) {
 		switch(event_tick(g, &g->autoev)) {
 		case EvReturn:
+			g->autoev.ncmd = 0;
 			return 0;
 		case EvRunning:
 			return 1;
