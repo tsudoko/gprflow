@@ -1,6 +1,7 @@
 typedef struct game Game;
 struct game {
 	char *basepath;
+	int running;
 	struct event_state autoev;
 	struct {
 		int x;

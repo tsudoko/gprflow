@@ -23,6 +23,7 @@ main(void)
 		return EXIT_FAILURE;
 	}
 
-	while(game_maptick(g) != 0);
+	while(g->running)
+		game_maptick(g);
 	return EXIT_SUCCESS;
 }
