@@ -42,6 +42,7 @@ int
 game_mapload(Game *g, int id)
 {
 	char p[Pathmax];
+	/* compatibility note: wolfrpg returns "<<ERROR>>" on invalid string queries */
 	char *mapname = database_igetstr(g->db[RefSysDatabase], 0, id, 0);
 	if(mapname == NULL || strlen(mapname) == 0)
 		return -1;
