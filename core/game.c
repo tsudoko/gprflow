@@ -48,10 +48,11 @@ game_mapload(Game *g, int id)
 
 	if(snprintf(p, sizeof p, "%s/Data/%s", g->basepath, mapname) > sizeof p)
 		return -1;
-	g->map = map_load(p);
-	if(g->map == NULL)
+	Map *m = map_load(p);
+	if(m == NULL)
 		return -1;
 
+	g->map = m;
 	/* TODO: set up bgm, redraw? */
 	return 0;
 }
