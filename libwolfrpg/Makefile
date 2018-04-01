@@ -1,24 +1,24 @@
 .PHONY: clean
 
 TARG = libwolfrpg.a
-OFILES = src/reader.o \
-	src/map.o \
-	src/command.o \
-	src/route.o \
-	src/commonevent.o \
-	src/enumstr.o \
-	src/database.o
+OFILES = reader.o \
+	map.o \
+	command.o \
+	route.o \
+	commonevent.o \
+	enumstr.o \
+	database.o
 
 # incomplete for now
-HFILES = src/database.h \
-	src/command.h
+HFILES = database.h \
+	command.h
 
 $(TARG): $(OFILES)
 	ar cr $@ $(OFILES)
 
-src/enumstr.c: src/_enumstr.c
-src/_enumstr.c: gen/enumstr.awk $(HFILES)
-	awk -f gen/enumstr.awk $(HFILES) > $@
+enumstr.c: _enumstr.c
+_enumstr.c: enumstr.awk $(HFILES)
+	awk -f enumstr.awk $(HFILES) > $@
 
 clean:
-	rm -f $(TARG) $(OFILES) src/_enumstr.c
+	rm -f $(TARG) $(OFILES) _enumstr.c
