@@ -63,6 +63,33 @@ event_tick(struct game *g, struct event_state *s)
 		assert(1 == 2); /* XXX */
 		break;
 	}
+	case CmdTeleport:
+		assert(c->narg >= 5);
+		if(c->args[0] <= -1) { /* location from sysdb/7 */
+			if(c->args[4]&TpPrecisePos) {
+				g->pc.x = c->args[1]/2;
+				g->pc.y = c->args[2]/2;
+				g->pc.px = c->args[1];
+				g->pc.py = c->args[2];
+			} else {
+				g->pc.x = c->args[1];
+				g->pc.y = c->args[2];
+				g->pc.px = c->args[1]*2;
+				g->pc.py = c->args[2]*2;
+			}
+			if(c->args[0] < -1) {
+				/* TODO */
+				printf("Teleport: using predefined locations is not implemented\n");
+			} else {
+				/* TODO: handle transitions */
+				if(game_mapload(g, c->args[3]) < 0)
+					ferrmsg(g, "failed to change map to %d\n", c->args[3]);
+			}
+		} else {
+			printf("Teleport: moving non-pc events is not implemented\n");
+			/* TODO */
+		}
+		break;
 	case CmdWait:
 		assert(c->narg >= 1);
 		s->waitframes = c->args[0];

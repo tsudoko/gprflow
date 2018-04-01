@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 
 #include <wolfrpg.h>
@@ -42,4 +43,13 @@ fchoice(Game *g, int n, char **c, int def, int keyflags)
 	}
 
 	return choice+1; /* first choice is 2 */
+}
+
+void
+ferrmsg(Game *g, char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
 }

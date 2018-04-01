@@ -118,6 +118,12 @@ enum command_flag {
 	CfOpNot = 0x6000, /* op(a, b) { return a ~ b } */
 };
 
+enum {
+	TpPrecisePos = 1<<1,
+	TpTransSimple = 1<<4,
+	TpBlackout = 1<<5,
+};
+
 void command_free(Command *c);
 void command_print(Command *c);
 const char *command_idstr(Command *c);
