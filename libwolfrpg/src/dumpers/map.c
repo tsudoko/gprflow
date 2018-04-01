@@ -13,6 +13,9 @@ main(int argc, char **argv)
 
 	Map *m = map_load(argv[1]);
 	map_print(m);
+	for(int i = 0; i < m->nev; i++)
+		for(int j = 0; j < m->evs[i].npage; j++)
+			page_print(m->evs[i].pages + j);
 	map_free(m);
 	return 0;
 }
