@@ -25,5 +25,7 @@ main(void)
 
 	while(g->running)
 		game_maptick(g);
+
+	printf("[clean shutdown]\n");
 	return EXIT_SUCCESS;
 }

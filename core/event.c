@@ -90,6 +90,9 @@ event_tick(struct game *g, struct event_state *s)
 			/* TODO */
 		}
 		break;
+	case CmdEndGame:
+		g->running = 0;
+		break;
 	case CmdWait:
 		assert(c->narg >= 1);
 		s->waitframes = c->args[0];
