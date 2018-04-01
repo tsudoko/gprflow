@@ -52,6 +52,10 @@ game_mapload(Game *g, int id)
 	if(m == NULL)
 		return -1;
 
+	/* TODO: copy auto event first
+	if(g->map != NULL)
+		map_free(g->map);
+	*/
 	g->map = m;
 	/* TODO: set up bgm, redraw? */
 	return 0;
@@ -82,6 +86,7 @@ game_init(char *basepath)
 	if(g == NULL)
 		return NULL;
 
+	g->map = NULL;
 	g->autoev.ncmd = 0;
 
 	if(game_mapload(g, database_igetint(g->db[RefSysDatabase], 7, 0, 0)) < 0)
