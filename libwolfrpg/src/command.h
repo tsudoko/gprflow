@@ -121,7 +121,7 @@ enum command_flag {
 enum {
 	TpPrecisePos = 1<<1,
 	TpTransSimple = 1<<4,
-	TpBlackout = 1<<5,
+	TpTransBlackout = 1<<5,
 };
 
 void command_free(Command *c);
