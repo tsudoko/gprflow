@@ -174,7 +174,6 @@ map_load(char *filename)
 	for(int i = 0; i < m->nev; i++) {
 		assert(readbyte(r) == '\x6f');
 		event_load(r, m->evs + i);
-		MapEvent *e = m->evs + i;
 	}
 
 	if(readbyte(r) != '\x66')
