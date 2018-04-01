@@ -92,7 +92,6 @@ game_init(char *basepath)
 	if(game_mapload(g, database_igetint(g->db[RefSysDatabase], 7, 0, 0)) < 0)
 		return NULL;
 
-	/* TODO: execute 自動イベント from teh current map and common events */
 	return g;
 }
 
@@ -110,7 +109,8 @@ game_maptick(Game *g)
 		}
 	}
 
-	/* TODO: auto/parallel common events */
+	/* TODO: parallel common events */
+	/* TODO: auto common events (after auto map events) */
 	for(int i = 0; i < g->map->nev; i++) {
 		MapEvent *e = g->map->evs + i;
 		for(int j = 0; j < e->npage; j++) {
@@ -121,7 +121,6 @@ game_maptick(Game *g)
 				continue;
 			#undef PageEvAuto
 
-			/* TODO: multiple auto events */
 			event_frompage(&g->autoev, p);
 			return 1;
 		}
