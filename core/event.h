@@ -5,14 +5,17 @@ struct loop_state {
 
 struct event_state {
 	long self[100]; /* TODO check if value range is correct */
-	/* not sure if these two are needed */
 	unsigned int ncmd;
 	Command *cmds;
-	unsigned int line;
-	unsigned int labels[64]; /* arbitrary length, meant to be a hash table (labelname -> linenum) */
-	struct loop_state loops[64]; /* index is loop depth */
-	Command reserved;
 
+	unsigned int waitframes;
+
+	int branch;
+	unsigned int branches[64];
+
+	unsigned int line;
+
+	Command reserved;
 	struct event_state *caller;
 	struct event_state *callee;
 };
