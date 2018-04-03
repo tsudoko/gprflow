@@ -50,6 +50,7 @@ game_mapload(Game *g, int id)
 	if(mapname == NULL || strlen(mapname) == 0)
 		return -1;
 
+	printf("changing map to %s\n", mapname);
 	if(snprintf(p, sizeof p, "%s/Data/%s", g->basepath, mapname) > sizeof p)
 		return -1;
 	Map *m = map_load(p);

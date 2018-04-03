@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include <stdio.h>
 
 #include <wolfrpg.h>
@@ -15,7 +14,7 @@ fmsg(Game *g, char *msg)
 int
 fchoice(Game *g, int n, char **c, int def, int keyflags)
 {
-	printf("[choice (def: %d)]\n", def);
+	printf("[choice (def: %d, starting pos: %d)]\n", def, g->choicepos+1);
 	for(int i = 0; i < n; i++)
 		printf("  [%d] %s\n", i+1, c[i]);
 	if(keyflags & 1)

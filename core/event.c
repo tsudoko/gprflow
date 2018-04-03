@@ -6,6 +6,45 @@
 #include "core.h"
 #include "frontend.h"
 
+int
+game_compare(Game *g, int l, int r, int flags)
+{
+	int op = flags&0xf;
+	l = game_deref_get(g, l);
+	if(flags & (1<<4))
+		r = game_deref_get(g, r);
+
+	switch(op) {
+		case CfCmpGt:  return l >  r;
+		case CfCmpGe:  return l >= r;
+		case CfCmpEq:  return l == r;
+		case CfCmpLe:  return l <= r;
+		case CfCmpLt:  return l <  r;
+		case CfCmpNe:  return l != r;
+		case CfCmpBit: return l & r == r;
+		default: printf("game_compare: unknown operator: %d\n", op);
+		return 0;
+	}
+}
+
+int
+event_gotobranch(struct event_state *s, int cid, int branch) {
+	/* XXX this might be slow for larger events, might want to move it to 1stpass */
+	for(int i = s->line; i < s->ncmd; i++) {
+		if(s->cmds[i].id == cid &&
+		   s->cmds[i].indent == s->cmds[s->line].indent &&
+		   s->cmds[i].narg >= 1 &&
+		   s->cmds[i].args[0] == branch) {
+			assert(i+1 < s->ncmd);
+			s->line = i+1;
+			return 1;
+		} else {
+			assert(s->cmds[i].id != CmdBranchEnd);
+		}
+	}
+	return 0;
+}
+
 void
 event_1stpass(struct event_state *e)
 {
@@ -45,24 +84,41 @@ event_tick(struct game *g, struct event_state *s)
 		/* TODO: parse escape codes (c->strargs[0]) */
 		fmsg(g, c->strargs[0]);
 		break;
+	case CmdVarCond: {
+		assert(c->narg >= 1);
+		int cid, branch = 0,
+		    nbranch = c->args[0] & 0xf,
+		    else_ = c->args[0] & (1<<4);
+
+		assert(c->narg >= 1 + (nbranch*3));
+		for(int i = 1; i < nbranch+1; i+=3) {
+			if(game_compare(g, c->args[i], c->args[i+1], c->args[i+2])) {
+				branch = i/3+1;
+				break;
+			}
+		}
+
+		if(branch)
+			cid = CmdChoiceCase;
+		else if(else_)
+			cid = CmdElseCase;
+		else
+			break;
+
+		if(event_gotobranch(s, cid, branch))
+			return EvRunning;
+
+		assert(1 == 2); /* XXX */
+		break;
+	}
 	case CmdChoice: {
 		/* TODO: parse escape codes (c->strargs) */
 		int r = fchoice(g, c->nstrarg, c->strargs, (c->args[0]&0xff)>>4, c->args[0]>>8);
 		g->choicepos = 0;
 		int cid = r == 0 ? CmdCancelCase : (r >= 100 ? CmdSpecialChoiceCase : CmdChoiceCase);
-		/* XXX this might be slow for larger events, might want to move it to 1stpass */
-		for(int i = s->line; i < s->ncmd; i++) {
-			if(s->cmds[i].id == cid &&
-			   s->cmds[i].indent == c->indent &&
-			   s->cmds[i].narg >= 1 &&
-			   s->cmds[i].args[0] == r) {
-				assert(i+1 < s->ncmd);
-				s->line = i+1;
-				return EvRunning;
-			} else {
-				assert(s->cmds[i].id != CmdBranchEnd);
-			}
-		}
+		if(event_gotobranch(s, cid, r))
+			return EvRunning;
+
 		assert(1 == 2); /* XXX */
 		break;
 	}

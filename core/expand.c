@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <wolfrpg.h>
 
 #include "core.h"
@@ -7,10 +9,10 @@ game_deref_get(Game *g, int v)
 {
 	if(v > -1000000 && v < 1000000)
 		return v;
-	if(v >= 8000000 && b < 9000000)
+	if(v >= 8000000 && v < 9000000)
 		return 4; /* FIXME */
 	if(v >= 9000000 && v < 9100000)
-		return game_sysgeti(v);
+		return game_sysgeti(g, v - 9000000);
 	if(v >= 9180000 && v < 9180009)
 		return g->pc[v - 9180000];
 

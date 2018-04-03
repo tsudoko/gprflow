@@ -66,3 +66,4 @@ enum {
 Game *game_init(char *);
 int game_maptick(Game *);
 int game_mapload(Game *, int);
+int game_sysgeti(Game *, int);
