@@ -48,6 +48,7 @@ event_tick(struct game *g, struct event_state *s)
 	case CmdChoice: {
 		/* TODO: parse escape codes (c->strargs) */
 		int r = fchoice(g, c->nstrarg, c->strargs, (c->args[0]&0xff)>>4, c->args[0]>>8);
+		g->choicepos = 0;
 		int cid = r == 0 ? CmdCancelCase : (r >= 100 ? CmdSpecialChoiceCase : CmdChoiceCase);
 		/* XXX this might be slow for larger events, might want to move it to 1stpass */
 		for(int i = s->line; i < s->ncmd; i++) {

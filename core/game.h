@@ -1,6 +1,7 @@
 typedef struct game Game;
 struct game {
 	char *basepath;
+	unsigned short choicepos;
 	int running;
 	struct event_state autoev;
 	int pc[10];
@@ -17,6 +18,14 @@ enum {
 };
 
 enum {
+	/* --- */
+
+	SysChoicePos = 7,
+
+	/* --- */
+
+	SysSaveNum = 25,
+
 	/* --- */
 
 	SysMouseX = 71,

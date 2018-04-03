@@ -87,6 +87,10 @@ int
 game_sysgeti(Game *g, int i)
 {
 	switch(i) {
+	case SysChoicePos:
+		return g->choicepos;
+	case SysSaveNum:
+		return 0; /* saving/loading isn't implemented yet */
 	case SysYear:
 	case SysMonth:
 	case SysDay:
