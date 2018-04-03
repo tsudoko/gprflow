@@ -30,6 +30,7 @@ event_tick(struct game *g, struct event_state *s)
 	Command *c = s->cmds + s->line;
 
 	if(s->waitframes) {
+		/* TODO: sync with actual frames */
 		--s->waitframes;
 		return EvRunning;
 	}
@@ -41,10 +42,11 @@ event_tick(struct game *g, struct event_state *s)
 		break;
 	case CmdMsg:
 		assert(c->nstrarg >= 1);
-		/* TODO: parse escape codes */
+		/* TODO: parse escape codes (c->strargs[0]) */
 		fmsg(g, c->strargs[0]);
 		break;
 	case CmdChoice: {
+		/* TODO: parse escape codes (c->strargs) */
 		int r = fchoice(g, c->nstrarg, c->strargs, (c->args[0]&0xff)>>4, c->args[0]>>8);
 		int cid = r == 0 ? CmdCancelCase : (r >= 100 ? CmdSpecialChoiceCase : CmdChoiceCase);
 		/* XXX this might be slow for larger events, might want to move it to 1stpass */
@@ -67,15 +69,15 @@ event_tick(struct game *g, struct event_state *s)
 		assert(c->narg >= 5);
 		if(c->args[0] <= -1) { /* location from sysdb/7 */
 			if(c->args[4]&TpPrecisePos) {
-				g->pc.x = c->args[1]/2;
-				g->pc.y = c->args[2]/2;
-				g->pc.px = c->args[1];
-				g->pc.py = c->args[2];
+				g->pc[EvX] = c->args[1]/2;
+				g->pc[EvY] = c->args[2]/2;
+				g->pc[EvPX] = c->args[1];
+				g->pc[EvPY] = c->args[2];
 			} else {
-				g->pc.x = c->args[1];
-				g->pc.y = c->args[2];
-				g->pc.px = c->args[1]*2;
-				g->pc.py = c->args[2]*2;
+				g->pc[EvX] = c->args[1];
+				g->pc[EvY] = c->args[2];
+				g->pc[EvPX] = c->args[1]*2;
+				g->pc[EvPY] = c->args[2]*2;
 			}
 			if(c->args[0] < -1) {
 				/* TODO */

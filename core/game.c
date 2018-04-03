@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <wolfrpg.h>
 
 #include "core.h"
 
 #define Pathmax 4096
+
+/* note: posix-1.2001 source (localtime_r) */
 
 int
 game_dbload(Game *g, char *basename, int id)
@@ -80,6 +83,45 @@ game_load(char *basepath)
 	return g;
 }
 
+int
+game_sysgeti(Game *g, int i)
+{
+	switch(i) {
+	case SysYear:
+	case SysMonth:
+	case SysDay:
+	case SysHour:
+	case SysMin:
+	case SysSec: {
+		struct tm t;
+		time_t ts = time(NULL);
+		localtime_r(&ts, &t);
+		switch(i) {
+		case SysYear:
+			return t.tm_year;
+		case SysMonth:
+			return t.tm_mon;
+		case SysDay:
+			return t.tm_mday;
+		case SysHour:
+			return t.tm_hour;
+		case SysMin:
+			return t.tm_min;
+		case SysSec:
+			return t.tm_sec;
+		}
+		break;
+	}
+	case SysScreenSize:
+		return 0;
+	case SysTestPlay:
+		return 1;
+	default:
+		printf("unimplemented sysvar: %d\n", i);
+		return -1;
+	}
+}
+
 Game *
 game_init(char *basepath)
 {
@@ -91,10 +133,10 @@ game_init(char *basepath)
 	g->autoev.ncmd = 0;
 	g->running = 1;
 
-	g->pc.x = database_igetint(g->db[RefSysDatabase], 7, 0, 1);
-	g->pc.y = database_igetint(g->db[RefSysDatabase], 7, 0, 2);
-	g->pc.px = g->pc.x*2;
-	g->pc.py = g->pc.y*2;
+	g->pc[EvX] = database_igetint(g->db[RefSysDatabase], 7, 0, 1);
+	g->pc[EvY] = database_igetint(g->db[RefSysDatabase], 7, 0, 2);
+	g->pc[EvPX] = g->pc[EvX]*2;
+	g->pc[EvPY] = g->pc[EvY]*2;
 
 	if(game_mapload(g, database_igetint(g->db[RefSysDatabase], 7, 0, 0)) < 0)
 		return NULL;
